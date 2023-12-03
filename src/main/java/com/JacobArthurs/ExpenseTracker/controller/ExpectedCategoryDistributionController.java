@@ -8,6 +8,7 @@ import com.JacobArthurs.ExpenseTracker.service.CategoryService;
 import com.JacobArthurs.ExpenseTracker.service.ExpectedCategoryDistributionService;
 import com.JacobArthurs.ExpenseTracker.util.CategoryUtils;
 import com.JacobArthurs.ExpenseTracker.util.ExpectedCategoryDistributionUtils;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,13 +42,13 @@ public class ExpectedCategoryDistributionController {
     }
 
     @PostMapping
-    public ResponseEntity<ExpectedCategoryDistributionDto> createExpectedCategoryDistribution(@RequestBody ExpectedCategoryDistributionRequestDto request) {
+    public ResponseEntity<ExpectedCategoryDistributionDto> createExpectedCategoryDistribution(@RequestBody @Valid ExpectedCategoryDistributionRequestDto request) {
         var category = expectedCategoryDistributionService.createCategory(request);
         return ResponseEntity.ok(new ExpectedCategoryDistributionDto(category));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ExpectedCategoryDistributionDto> updateExpectedCategoryDistribution(@PathVariable Long id, @RequestBody ExpectedCategoryDistributionRequestDto request) {
+    public ResponseEntity<ExpectedCategoryDistributionDto> updateExpectedCategoryDistribution(@PathVariable Long id, @RequestBody @Valid ExpectedCategoryDistributionRequestDto request) {
         var category = expectedCategoryDistributionService.updateCategory(id, request);
         if (category != null) {
             return ResponseEntity.ok(new ExpectedCategoryDistributionDto(category));

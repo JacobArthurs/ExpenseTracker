@@ -3,6 +3,7 @@ import com.JacobArthurs.ExpenseTracker.dto.ExpenseRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.ExpenseDto;
 import com.JacobArthurs.ExpenseTracker.service.ExpenseService;
 import com.JacobArthurs.ExpenseTracker.util.ExpenseUtils;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,13 +37,13 @@ public class ExpenseController {
     }
 
     @PostMapping
-    public ResponseEntity<ExpenseDto> createExpense(@RequestBody ExpenseRequestDto request) {
+    public ResponseEntity<ExpenseDto> createExpense(@RequestBody @Valid ExpenseRequestDto request) {
         var expense = expenseService.createExpense(request);
         return ResponseEntity.ok(new ExpenseDto(expense));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ExpenseDto> updateExpense(@PathVariable Long id, @RequestBody ExpenseRequestDto request) {
+    public ResponseEntity<ExpenseDto> updateExpense(@PathVariable Long id, @RequestBody @Valid ExpenseRequestDto request) {
         var expense = expenseService.updateExpense(id, request);
         if (expense != null) {
             return ResponseEntity.ok(new ExpenseDto(expense));

@@ -4,6 +4,7 @@ import com.JacobArthurs.ExpenseTracker.dto.CategoryDto;
 import com.JacobArthurs.ExpenseTracker.dto.CategoryRequestDto;
 import com.JacobArthurs.ExpenseTracker.service.CategoryService;
 import com.JacobArthurs.ExpenseTracker.util.CategoryUtils;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,13 +38,13 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryDto> createCategory(@RequestBody CategoryRequestDto request) {
+    public ResponseEntity<CategoryDto> createCategory(@RequestBody @Valid CategoryRequestDto request) {
         var category = categoryService.createCategory(request);
         return ResponseEntity.ok(new CategoryDto(category));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryDto> updateCategory(@PathVariable Long id, @RequestBody CategoryRequestDto request) {
+    public ResponseEntity<CategoryDto> updateCategory(@PathVariable Long id, @RequestBody @Valid CategoryRequestDto request) {
         var category = categoryService.updateCategory(id, request);
         if (category != null) {
             return ResponseEntity.ok(new CategoryDto(category));
