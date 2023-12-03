@@ -28,4 +28,10 @@ public class Category {
 
     @Column(name = "last_updated_date", nullable = false)
     private Timestamp lastUpdatedDate;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE)
+    private List<Expense> expenses;
+
+    @OneToOne(mappedBy = "category", cascade = CascadeType.REMOVE)
+    private ExpectedCategoryDistribution expectedCategoryDistribution;
 }

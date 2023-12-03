@@ -1,3 +1,39 @@
+-- init.sql
+-- To be run only when a new docker volume 'postgres-data' is created.
+-- Tables must be created in this script because they will not be created by jpa until runtime.
+
+--Create tables
+CREATE TABLE category (
+	id serial PRIMARY KEY,
+	title VARCHAR ( 50 ) NOT NULL,
+	description VARCHAR ( 200 ),
+	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    last_updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE TABLE expected_category_distribution (
+	id serial PRIMARY KEY,
+	category_id INT NOT NULL,
+	minimum_distribution int NOT NULL,
+	maximum_distribution int NOT NULL,
+	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    last_updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	FOREIGN KEY (category_id)
+    	REFERENCES category (id)
+);
+
+CREATE TABLE expense (
+	id serial PRIMARY KEY,
+	category_id INT NOT NULL,
+	title VARCHAR ( 50 ) NOT NULL,
+	description VARCHAR ( 200 ),
+	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    last_updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	FOREIGN KEY (category_id)
+    	REFERENCES category (id)
+);
+
+--Insert default category and expected_category_distribution data
 INSERT INTO category (title, description, created_date, last_updated_date)
 VALUES
     ('Housing', 'Expenses related to housing.', '2023-11-30 13:56:02.845258', '2023-11-30 13:56:02.845258'),
@@ -23,7 +59,3 @@ VALUES
     (8, 5, 10, '2023-11-30 13:56:02.845258', '2023-11-30 13:56:02.845258'),   -- Personal Spending
     (9, 5, 10, '2023-11-30 13:56:02.845258', '2023-11-30 13:56:02.845258'),   -- Recreation & Entertainment
     (10, 5, 10, '2023-11-30 13:56:02.845258', '2023-11-30 13:56:02.845258');  -- Miscellaneous
-
---INSERT INTO expense (category_id, title, description, created_date, last_updated_date)
---VALUES
---    (1, 'test', 'test', '2023-11-30 13:56:02.845258', '2023-11-30 13:56:02.845258')
