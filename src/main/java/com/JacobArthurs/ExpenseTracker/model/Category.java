@@ -3,6 +3,8 @@ package com.JacobArthurs.ExpenseTracker.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
@@ -21,6 +23,9 @@ public class Category {
     @Column(name = "description", length = 200)
     private String description;
 
-    @OneToMany(mappedBy = "category")
-    private List<Expense> expenses;
+    @Column(name = "created_date", nullable = false)
+    private Timestamp createdDate;
+
+    @Column(name = "last_updated_date", nullable = false)
+    private Timestamp lastUpdatedDate;
 }
