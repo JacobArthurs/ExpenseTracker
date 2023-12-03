@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Timestamp;
+
 @Entity
 @Table(name = "expected_category_distribution")
 @Getter
@@ -23,4 +25,10 @@ public class ExpectedCategoryDistribution {
 
     @Column(name = "maximum_distribution", nullable = false)
     private int maximumDistribution;
+
+    @Column(name = "created_date", nullable = false)
+    private Timestamp createdDate;
+
+    @Column(name = "last_updated_date", nullable = false)
+    private Timestamp lastUpdatedDate;
 }

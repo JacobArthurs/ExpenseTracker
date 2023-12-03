@@ -29,16 +29,16 @@ public class ExpenseService {
         return expenseRepository.findById(id).orElse(null);
     }
 
-    public Expense createExpense(ExpenseRequestDto expenseRequest) {
-        var expense = ExpenseUtils.convertExpenseRequestToExpense(expenseRequest, categoryService);
+    public Expense createExpense(ExpenseRequestDto request) {
+        var expense = ExpenseUtils.convertRequestToObject(request, categoryService);
         expense.setCreatedDate(new Timestamp(System.currentTimeMillis()));
 
         return expenseRepository.save(expense);
     }
 
-    public Expense updateExpense(Long id, ExpenseRequestDto expenseRequest) {
+    public Expense updateExpense(Long id, ExpenseRequestDto request) {
         if (expenseRepository.existsById(id)) {
-            var expense = ExpenseUtils.convertExpenseRequestToExpense(expenseRequest, categoryService);
+            var expense = ExpenseUtils.convertRequestToObject(request, categoryService);
             expense.setId(id);
 
             return expenseRepository.save(expense);

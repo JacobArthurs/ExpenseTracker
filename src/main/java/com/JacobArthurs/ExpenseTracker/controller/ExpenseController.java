@@ -15,12 +15,14 @@ public class ExpenseController {
     private final ExpenseService expenseService;
 
     @Autowired
-    public ExpenseController(ExpenseService expenseService) { this.expenseService = expenseService; }
+    public ExpenseController(ExpenseService expenseService) {
+        this.expenseService = expenseService;
+    }
 
     @GetMapping()
     public ResponseEntity<List<ExpenseDto>> getAllExpenses() {
         var expenses = expenseService.getAllExpenses();
-        return ResponseEntity.ok(ExpenseUtils.convertExpenseListToExpenseDtoList(expenses));
+        return ResponseEntity.ok(ExpenseUtils.convertObjectListToDtoList(expenses));
     }
 
     @GetMapping("/{id}")
@@ -34,14 +36,14 @@ public class ExpenseController {
     }
 
     @PostMapping
-    public ResponseEntity<ExpenseDto> createExpense(@RequestBody ExpenseRequestDto expenseRequest) {
-        var expense = expenseService.createExpense(expenseRequest);
+    public ResponseEntity<ExpenseDto> createExpense(@RequestBody ExpenseRequestDto request) {
+        var expense = expenseService.createExpense(request);
         return ResponseEntity.ok(new ExpenseDto(expense));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ExpenseDto> updateExpense(@PathVariable Long id, @RequestBody ExpenseRequestDto expenseRequest) {
-        var expense = expenseService.updateExpense(id, expenseRequest);
+    public ResponseEntity<ExpenseDto> updateExpense(@PathVariable Long id, @RequestBody ExpenseRequestDto request) {
+        var expense = expenseService.updateExpense(id, request);
         if (expense != null) {
             return ResponseEntity.ok(new ExpenseDto(expense));
         } else {

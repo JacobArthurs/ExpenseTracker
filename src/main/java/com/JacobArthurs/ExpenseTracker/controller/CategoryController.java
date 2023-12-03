@@ -2,12 +2,8 @@ package com.JacobArthurs.ExpenseTracker.controller;
 
 import com.JacobArthurs.ExpenseTracker.dto.CategoryDto;
 import com.JacobArthurs.ExpenseTracker.dto.CategoryRequestDto;
-import com.JacobArthurs.ExpenseTracker.dto.ExpenseDto;
-import com.JacobArthurs.ExpenseTracker.dto.ExpenseRequestDto;
 import com.JacobArthurs.ExpenseTracker.service.CategoryService;
-import com.JacobArthurs.ExpenseTracker.service.ExpenseService;
 import com.JacobArthurs.ExpenseTracker.util.CategoryUtils;
-import com.JacobArthurs.ExpenseTracker.util.ExpenseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,16 +16,18 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @Autowired
-    public CategoryController(CategoryService categoryService) { this.categoryService = categoryService; }
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
     @GetMapping()
-    public ResponseEntity<List<CategoryDto>> getAllExpenses() {
+    public ResponseEntity<List<CategoryDto>> getAllCategories() {
         var categories = categoryService.getAllCategories();
-        return ResponseEntity.ok(CategoryUtils.convertCategoryListToCategoryDtoList(categories));
+        return ResponseEntity.ok(CategoryUtils.convertObjectListToDtoList(categories));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryDto> getExpenseById(@PathVariable Long id) {
+    public ResponseEntity<CategoryDto> getCategoryById(@PathVariable Long id) {
         var category = categoryService.getCategoryById(id);
         if (category != null) {
             return ResponseEntity.ok(new CategoryDto(category));
@@ -39,14 +37,14 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryDto> createExpense(@RequestBody CategoryRequestDto categoryRequest) {
-        var category = categoryService.createCategory(categoryRequest);
+    public ResponseEntity<CategoryDto> createCategory(@RequestBody CategoryRequestDto request) {
+        var category = categoryService.createCategory(request);
         return ResponseEntity.ok(new CategoryDto(category));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryDto> updateExpense(@PathVariable Long id, @RequestBody CategoryRequestDto categoryRequest) {
-        var category = categoryService.updateCategory(id, categoryRequest);
+    public ResponseEntity<CategoryDto> updateCategory(@PathVariable Long id, @RequestBody CategoryRequestDto request) {
+        var category = categoryService.updateCategory(id, request);
         if (category != null) {
             return ResponseEntity.ok(new CategoryDto(category));
         } else {

@@ -10,19 +10,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ExpenseUtils {
-    public static List<ExpenseDto> convertExpenseListToExpenseDtoList(List<Expense> expenses) {
+    public static List<ExpenseDto> convertObjectListToDtoList(List<Expense> expenses) {
         return expenses.stream()
                 .map(ExpenseDto::new)
                 .collect(Collectors.toList());
     }
 
-    public static Expense convertExpenseRequestToExpense(ExpenseRequestDto expenseCreate, CategoryService categoryService) {
+    public static Expense convertRequestToObject(ExpenseRequestDto request, CategoryService categoryService) {
         var expense = new Expense();
-        expense.setTitle(expenseCreate.getTitle());
-        expense.setDescription(expenseCreate.getDescription());
+        expense.setTitle(request.getTitle());
+        expense.setDescription(request.getDescription());
         expense.setLastUpdatedDate(new Timestamp(System.currentTimeMillis()));
 
-        var category = categoryService.getCategoryById(expenseCreate.getCategoryId());
+        var category = categoryService.getCategoryById(request.getCategoryId());
         expense.setCategory(category);
 
         return expense;
