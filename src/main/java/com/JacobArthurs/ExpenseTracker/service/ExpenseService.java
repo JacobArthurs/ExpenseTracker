@@ -1,18 +1,24 @@
 package com.JacobArthurs.ExpenseTracker.service;
 
+import com.JacobArthurs.ExpenseTracker.dto.ExpenseRequestDto;
 import com.JacobArthurs.ExpenseTracker.model.Expense;
 import com.JacobArthurs.ExpenseTracker.repository.ExpenseRepository;
+import com.JacobArthurs.ExpenseTracker.util.ExpenseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
 import java.util.List;
 
 @Service
 public class ExpenseService {
     private final ExpenseRepository expenseRepository;
+    private final CategoryService categoryService;
 
     @Autowired
-    public ExpenseService(ExpenseRepository expenseRepository) {
+    public ExpenseService(ExpenseRepository expenseRepository, CategoryService categoryService) {
         this.expenseRepository = expenseRepository;
+        this.categoryService = categoryService;
     }
 
     public List<Expense> getAllExpenses() {
@@ -23,14 +29,19 @@ public class ExpenseService {
         return expenseRepository.findById(id).orElse(null);
     }
 
-    public Expense createExpense(Expense expense) {
+    public Expense createExpense(ExpenseRequestDto expenseRequest) {
+        var expense = ExpenseUtils.convertExpenseRequestToExpense(expenseRequest, categoryService);
+        expense.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+
         return expenseRepository.save(expense);
     }
 
-    public Expense updateExpense(Long id, Expense updatedExpense) {
+    public Expense updateExpense(Long id, ExpenseRequestDto expenseRequest) {
         if (expenseRepository.existsById(id)) {
-            updatedExpense.setId(id);
-            return expenseRepository.save(updatedExpense);
+            var expense = ExpenseUtils.convertExpenseRequestToExpense(expenseRequest, categoryService);
+            expense.setId(id);
+
+            return expenseRepository.save(expense);
         } else {
             return null;
         }

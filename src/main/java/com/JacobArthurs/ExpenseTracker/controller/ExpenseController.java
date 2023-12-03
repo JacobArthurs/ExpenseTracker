@@ -1,6 +1,6 @@
 package com.JacobArthurs.ExpenseTracker.controller;
+import com.JacobArthurs.ExpenseTracker.dto.ExpenseRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.ExpenseDto;
-import com.JacobArthurs.ExpenseTracker.model.Expense;
 import com.JacobArthurs.ExpenseTracker.service.ExpenseService;
 import com.JacobArthurs.ExpenseTracker.util.ExpenseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ public class ExpenseController {
     @GetMapping()
     public ResponseEntity<List<ExpenseDto>> getAllExpenses() {
         var expenses = expenseService.getAllExpenses();
-        return ResponseEntity.ok(ExpenseUtils.convertToExpenseDtos(expenses));
+        return ResponseEntity.ok(ExpenseUtils.convertExpenseListToExpenseDtoList(expenses));
     }
 
     @GetMapping("/{id}")
@@ -34,14 +34,14 @@ public class ExpenseController {
     }
 
     @PostMapping
-    public ResponseEntity<ExpenseDto> createExpense(@RequestBody Expense expense) {
-        var createdExpense = expenseService.createExpense(expense);
-        return ResponseEntity.ok(new ExpenseDto(createdExpense));
+    public ResponseEntity<ExpenseDto> createExpense(@RequestBody ExpenseRequestDto expenseRequest) {
+        var expense = expenseService.createExpense(expenseRequest);
+        return ResponseEntity.ok(new ExpenseDto(expense));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ExpenseDto> updateExpense(@PathVariable Long id, @RequestBody Expense updatedExpense) {
-        var expense = expenseService.updateExpense(id, updatedExpense);
+    public ResponseEntity<ExpenseDto> updateExpense(@PathVariable Long id, @RequestBody ExpenseRequestDto expenseRequest) {
+        var expense = expenseService.updateExpense(id, expenseRequest);
         if (expense != null) {
             return ResponseEntity.ok(new ExpenseDto(expense));
         } else {
