@@ -6,32 +6,11 @@ This project is an Expense Tracker web API made using Java Spring Boot, PostgreS
 
 Before you begin, ensure you have met the following requirements:
 
-- Docker installed on your machine.
-- If building from source:
-    - Java Development Kit (JDK) installed.
-    - Maven installed.
+- Docker installed and running on your machine.
+- Java Development Kit (JDK) installed.
+- Maven installed.
 
 ## Getting Started
-### Option 1: Pulling from Docker Hub
-
-To run ExpenseTracker directly from the Docker image on Docker Hub, follow these steps:
-
-1. ***Pull the Docker image from Docker Hub:***
-
-    ```
-    docker pull jacobarthurs/expensetracker:latest
-    ```
-
-2. ***Run the Docker container:***
-
-    ```
-    docker run -p 8080:8080 jacobarthurs/expensetracker:latest
-   ```
-   
-### Option 2: Building from Source
-
-To run ExpenseTracker from the source code, follow these steps:
-
 1. **Clone the repository:**
 
    ```
@@ -39,10 +18,10 @@ To run ExpenseTracker from the source code, follow these steps:
    
    cd ./expensetracker
    ```
-2. **Build and deploy the Docker image:**
+2. **Build and start the docker containers:**
     ```
-    ./build_and_deploy.bat
-   ```
+    ./build_and_compose.bat
+    ```
 
 ## Usage
 Access the application at http://localhost:8080/api.
