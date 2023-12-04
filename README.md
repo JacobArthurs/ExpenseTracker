@@ -24,4 +24,4 @@ Before you begin, ensure you have met the following requirements:
     ```
 
 ## Usage
-Access the application at http://localhost:8080/api.
+To explore endpoints and view documentation navigate to: `http://localhost:8080/api/swagger-ui`.

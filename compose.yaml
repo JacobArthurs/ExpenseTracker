@@ -13,7 +13,7 @@ services:
       - './docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
 
   spring-app:
-    build: '.'
+    image: 'expensetracker'
     container_name: 'expensetracker-spring-app'
     ports:
       - '8080:8080'
