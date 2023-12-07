@@ -1,11 +1,9 @@
 package com.JacobArthurs.ExpenseTracker.service;
 
-import com.JacobArthurs.ExpenseTracker.dto.CategoryRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.ExpectedCategoryDistributionRequestDto;
 import com.JacobArthurs.ExpenseTracker.model.ExpectedCategoryDistribution;
 import com.JacobArthurs.ExpenseTracker.repository.ExpectedCategoryDistributionRepository;
-import com.JacobArthurs.ExpenseTracker.util.CategoryUtils;
-import com.JacobArthurs.ExpenseTracker.util.ExpectedCategoryDistributionUtils;
+import com.JacobArthurs.ExpenseTracker.util.ExpectedCategoryDistributionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +30,7 @@ public class ExpectedCategoryDistributionService {
     }
 
     public ExpectedCategoryDistribution createCategory(ExpectedCategoryDistributionRequestDto request) {
-        var expectedCategoryDistribution = ExpectedCategoryDistributionUtils.convertRequestToObject(request, categoryService);
+        var expectedCategoryDistribution = ExpectedCategoryDistributionUtil.convertRequestToObject(request, categoryService);
         expectedCategoryDistribution.setCreatedDate(new Timestamp(System.currentTimeMillis()));
 
         return expectedCategoryDistributionRepository.save(expectedCategoryDistribution);
@@ -40,7 +38,7 @@ public class ExpectedCategoryDistributionService {
 
     public ExpectedCategoryDistribution updateCategory(Long id, ExpectedCategoryDistributionRequestDto request) {
         if (expectedCategoryDistributionRepository.existsById(id)) {
-            var expectedCategoryDistribution = ExpectedCategoryDistributionUtils.convertRequestToObject(request, categoryService);
+            var expectedCategoryDistribution = ExpectedCategoryDistributionUtil.convertRequestToObject(request, categoryService);
             expectedCategoryDistribution.setId(id);
 
             return expectedCategoryDistributionRepository.save(expectedCategoryDistribution);

@@ -2,7 +2,7 @@ package com.JacobArthurs.ExpenseTracker.controller;
 import com.JacobArthurs.ExpenseTracker.dto.ExpenseRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.ExpenseDto;
 import com.JacobArthurs.ExpenseTracker.service.ExpenseService;
-import com.JacobArthurs.ExpenseTracker.util.ExpenseUtils;
+import com.JacobArthurs.ExpenseTracker.util.ExpenseUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -27,7 +27,7 @@ public class ExpenseController {
     @Operation(summary = "Get all expenses", description = "Returns all expenses")
     public ResponseEntity<List<ExpenseDto>> getAllExpenses() {
         var expenses = expenseService.getAllExpenses();
-        return ResponseEntity.ok(ExpenseUtils.convertObjectListToDtoList(expenses));
+        return ResponseEntity.ok(ExpenseUtil.convertObjectListToDtoList(expenses));
     }
 
     @GetMapping("/{id}")

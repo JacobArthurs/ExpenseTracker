@@ -3,7 +3,7 @@ package com.JacobArthurs.ExpenseTracker.service;
 import com.JacobArthurs.ExpenseTracker.dto.CategoryRequestDto;
 import com.JacobArthurs.ExpenseTracker.model.Category;
 import com.JacobArthurs.ExpenseTracker.repository.CategoryRepository;
-import com.JacobArthurs.ExpenseTracker.util.CategoryUtils;
+import com.JacobArthurs.ExpenseTracker.util.CategoryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +28,7 @@ public class CategoryService {
     }
 
     public Category createCategory(CategoryRequestDto request) {
-        var category = CategoryUtils.convertRequestToObject(request);
+        var category = CategoryUtil.convertRequestToObject(request);
         category.setCreatedDate(new Timestamp(System.currentTimeMillis()));
 
         return categoryRepository.save(category);
@@ -36,7 +36,7 @@ public class CategoryService {
 
     public Category updateCategory(Long id, CategoryRequestDto request) {
         if (categoryRepository.existsById(id)) {
-            var category = CategoryUtils.convertRequestToObject(request);
+            var category = CategoryUtil.convertRequestToObject(request);
             category.setId(id);
 
             return categoryRepository.save(category);

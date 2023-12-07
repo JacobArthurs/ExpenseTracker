@@ -1,13 +1,9 @@
 package com.JacobArthurs.ExpenseTracker.controller;
 
-import com.JacobArthurs.ExpenseTracker.dto.CategoryDto;
-import com.JacobArthurs.ExpenseTracker.dto.CategoryRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.ExpectedCategoryDistributionDto;
 import com.JacobArthurs.ExpenseTracker.dto.ExpectedCategoryDistributionRequestDto;
-import com.JacobArthurs.ExpenseTracker.service.CategoryService;
 import com.JacobArthurs.ExpenseTracker.service.ExpectedCategoryDistributionService;
-import com.JacobArthurs.ExpenseTracker.util.CategoryUtils;
-import com.JacobArthurs.ExpenseTracker.util.ExpectedCategoryDistributionUtils;
+import com.JacobArthurs.ExpenseTracker.util.ExpectedCategoryDistributionUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -32,7 +28,7 @@ public class ExpectedCategoryDistributionController {
     @Operation(summary = "Get all expected category distributions", description = "Returns all expected category distributions")
     public ResponseEntity<List<ExpectedCategoryDistributionDto>> getAllExpectedCategoryDistributions() {
         var categories = expectedCategoryDistributionService.getAllCategories();
-        return ResponseEntity.ok(ExpectedCategoryDistributionUtils.convertObjectListToDtoList(categories));
+        return ResponseEntity.ok(ExpectedCategoryDistributionUtil.convertObjectListToDtoList(categories));
     }
 
     @GetMapping("/{id}")

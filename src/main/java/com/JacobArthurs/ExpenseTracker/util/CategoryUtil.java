@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CategoryUtils {
+public class CategoryUtil {
     public static List<CategoryDto> convertObjectListToDtoList(List<Category> categories) {
         return categories.stream()
                 .map(CategoryDto::new)

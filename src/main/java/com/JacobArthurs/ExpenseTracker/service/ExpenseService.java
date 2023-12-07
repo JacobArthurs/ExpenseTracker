@@ -3,7 +3,7 @@ package com.JacobArthurs.ExpenseTracker.service;
 import com.JacobArthurs.ExpenseTracker.dto.ExpenseRequestDto;
 import com.JacobArthurs.ExpenseTracker.model.Expense;
 import com.JacobArthurs.ExpenseTracker.repository.ExpenseRepository;
-import com.JacobArthurs.ExpenseTracker.util.ExpenseUtils;
+import com.JacobArthurs.ExpenseTracker.util.ExpenseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +30,7 @@ public class ExpenseService {
     }
 
     public Expense createExpense(ExpenseRequestDto request) {
-        var expense = ExpenseUtils.convertRequestToObject(request, categoryService);
+        var expense = ExpenseUtil.convertRequestToObject(request, categoryService);
         expense.setCreatedDate(new Timestamp(System.currentTimeMillis()));
 
         return expenseRepository.save(expense);
@@ -38,7 +38,7 @@ public class ExpenseService {
 
     public Expense updateExpense(Long id, ExpenseRequestDto request) {
         if (expenseRepository.existsById(id)) {
-            var expense = ExpenseUtils.convertRequestToObject(request, categoryService);
+            var expense = ExpenseUtil.convertRequestToObject(request, categoryService);
             expense.setId(id);
 
             return expenseRepository.save(expense);

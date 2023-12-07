@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ExpenseUtils {
+public class ExpenseUtil {
     public static List<ExpenseDto> convertObjectListToDtoList(List<Expense> expenses) {
         return expenses.stream()
                 .map(ExpenseDto::new)

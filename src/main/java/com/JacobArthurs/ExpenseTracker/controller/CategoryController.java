@@ -3,7 +3,7 @@ package com.JacobArthurs.ExpenseTracker.controller;
 import com.JacobArthurs.ExpenseTracker.dto.CategoryDto;
 import com.JacobArthurs.ExpenseTracker.dto.CategoryRequestDto;
 import com.JacobArthurs.ExpenseTracker.service.CategoryService;
-import com.JacobArthurs.ExpenseTracker.util.CategoryUtils;
+import com.JacobArthurs.ExpenseTracker.util.CategoryUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -28,7 +28,7 @@ public class CategoryController {
     @Operation(summary = "Get all categories", description = "Returns all categories")
     public ResponseEntity<List<CategoryDto>> getAllCategories() {
         var categories = categoryService.getAllCategories();
-        return ResponseEntity.ok(CategoryUtils.convertObjectListToDtoList(categories));
+        return ResponseEntity.ok(CategoryUtil.convertObjectListToDtoList(categories));
     }
 
     @GetMapping("/{id}")

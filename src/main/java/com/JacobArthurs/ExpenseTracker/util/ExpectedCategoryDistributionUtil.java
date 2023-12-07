@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ExpectedCategoryDistributionUtils {
+public class ExpectedCategoryDistributionUtil {
     public static List<ExpectedCategoryDistributionDto> convertObjectListToDtoList(List<ExpectedCategoryDistribution> expectedCategoryDistributions) {
         return expectedCategoryDistributions.stream()
                 .map(ExpectedCategoryDistributionDto::new)
