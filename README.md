@@ -16,7 +16,7 @@ Before you begin, ensure you have met the following requirements:
    ```
    git clone https://github.com/JacobArthurs/ExpenseTrackerApi.git
    
-   cd ./expensetracker
+   cd ./ExpenseTrackerApi/
    ```
 2. **Build and start the docker containers:**
     ```
