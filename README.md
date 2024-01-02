@@ -1,4 +1,4 @@
-# Expense Tracker
+# Expense Tracker API
 
 This project is an Expense Tracker web API made using Java Spring Boot, PostgreSQL, and Docker.
 
@@ -14,7 +14,7 @@ Before you begin, ensure you have met the following requirements:
 1. **Clone the repository:**
 
    ```
-   git clone https://github.com/jacobarthurs/expensetracker.git
+   git clone https://github.com/JacobArthurs/ExpenseTrackerApi.git
    
    cd ./expensetracker
    ```
