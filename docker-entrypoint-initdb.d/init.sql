@@ -59,3 +59,39 @@ VALUES
     (8, 5, 10, '2023-11-30 13:56:02.845258', '2023-11-30 13:56:02.845258'),   -- Personal Spending
     (9, 5, 10, '2023-11-30 13:56:02.845258', '2023-11-30 13:56:02.845258'),   -- Recreation & Entertainment
     (10, 5, 10, '2023-11-30 13:56:02.845258', '2023-11-30 13:56:02.845258');  -- Miscellaneous
+
+--Function to generate dummy expense data (roughly 1000 rows) based on the expected category distribution rates
+DO $$
+DECLARE
+    distribution_record RECORD;
+    category_id INT;
+    min_distribution INT;
+    max_distribution INT;
+    random_percentage INT;
+    total_expenses INT := 1000;
+    num_expenses INT;
+    i INT;
+    expense_date TIMESTAMP;
+BEGIN
+    FOR distribution_record IN (SELECT * FROM expected_category_distribution) LOOP
+        category_id := distribution_record.category_id;
+        min_distribution := distribution_record.minimum_distribution;
+        max_distribution := distribution_record.maximum_distribution;
+
+        -- Generate a random percentage within the specified distribution
+        random_percentage := floor(random() * (max_distribution - min_distribution) + min_distribution);
+
+        -- Calculate the number of expenses based on the percentage
+        num_expenses := CEIL((random_percentage / 100.0) * total_expenses);
+
+        FOR i IN 1..num_expenses LOOP
+            -- Generate a random date between current date and 6 months ago
+            expense_date := CURRENT_DATE - (floor(random() * 180) || ' days')::INTERVAL;
+
+            -- Insert dummy expense data into the expense table
+            INSERT INTO expense (category_id, title, description, created_date, last_updated_date)
+            VALUES (category_id, 'Expense ' || i, 'Description for Expense ' || i, expense_date, expense_date);
+        END LOOP;
+    END LOOP;
+END
+$$;

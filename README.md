@@ -24,4 +24,9 @@ Before you begin, ensure you have met the following requirements:
     ```
 
 ## Usage
-To explore endpoints and view documentation navigate to: `http://localhost:8080/api/swagger-ui`.
+- To explore endpoints and view documentation navigate to: `http://localhost:8080/api/swagger-ui`.
+
+- To clear docker postgres persistent storage run command:
+    ```
+    docker volume rm expensetrackerapi_postgres-data
+    ```
