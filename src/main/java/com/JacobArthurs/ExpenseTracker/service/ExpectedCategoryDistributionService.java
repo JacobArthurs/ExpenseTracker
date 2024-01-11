@@ -1,10 +1,8 @@
 package com.JacobArthurs.ExpenseTracker.service;
 
-import com.JacobArthurs.ExpenseTracker.dto.CategorySearchRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.ExpectedCategoryDistributionRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.ExpectedCategoryDistributionSearchRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.PaginatedResponse;
-import com.JacobArthurs.ExpenseTracker.model.Category;
 import com.JacobArthurs.ExpenseTracker.model.ExpectedCategoryDistribution;
 import com.JacobArthurs.ExpenseTracker.repository.ExpectedCategoryDistributionRepository;
 import com.JacobArthurs.ExpenseTracker.util.ExpectedCategoryDistributionUtil;
@@ -12,6 +10,7 @@ import com.JacobArthurs.ExpenseTracker.util.OffsetBasedPageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +32,7 @@ public class ExpectedCategoryDistributionService {
         return expectedCategoryDistributionRepository.findAll();
     }
 
-    public ExpectedCategoryDistribution getCategoryById(Long  id) {
+    public ExpectedCategoryDistribution getCategoryById(Long id) {
         return expectedCategoryDistributionRepository.findById(id).orElse(null);
     }
 
@@ -74,20 +73,24 @@ public class ExpectedCategoryDistributionService {
 
         if (request.getCategoryId() != null) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("categoryId"), request.getCategoryId()));
+                    criteriaBuilder.equal(root.get("category").get("id"), request.getCategoryId()));
         }
 
-        if (request.getCreatedDate() != null) {
+        if (request.getStartDate() != null) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("createdDate"), request.getCreatedDate()));
+                    criteriaBuilder.greaterThanOrEqualTo(root.get("createdDate"), request.getStartDate()));
         }
 
-        if (request.getLastUpdatedDate() != null) {
+        if (request.getEndDate() != null) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("lastUpdatedDate"), request.getLastUpdatedDate()));
+                    criteriaBuilder.lessThanOrEqualTo(root.get("createdDate"), request.getEndDate()));
         }
 
-        Pageable pageable = new OffsetBasedPageRequest(request.getOffset(), request.getLimit());
+        var sort = Sort.by(
+                Sort.Order.desc("createdDate"),
+                Sort.Order.desc("lastUpdatedDate"));
+
+        Pageable pageable = new OffsetBasedPageRequest(request.getOffset(), request.getLimit(), sort);
 
         Page<ExpectedCategoryDistribution> categoryPage = expectedCategoryDistributionRepository.findAll(spec, pageable);
 

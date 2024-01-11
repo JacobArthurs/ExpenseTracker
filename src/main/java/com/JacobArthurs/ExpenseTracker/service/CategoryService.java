@@ -2,17 +2,15 @@ package com.JacobArthurs.ExpenseTracker.service;
 
 import com.JacobArthurs.ExpenseTracker.dto.CategoryRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.CategorySearchRequestDto;
-import com.JacobArthurs.ExpenseTracker.dto.ExpenseSearchRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.PaginatedResponse;
 import com.JacobArthurs.ExpenseTracker.model.Category;
-import com.JacobArthurs.ExpenseTracker.model.Expense;
 import com.JacobArthurs.ExpenseTracker.repository.CategoryRepository;
 import com.JacobArthurs.ExpenseTracker.util.CategoryUtil;
 import com.JacobArthurs.ExpenseTracker.util.OffsetBasedPageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +30,7 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
-    public Category getCategoryById(Long  id) {
+    public Category getCategoryById(Long id) {
         return categoryRepository.findById(id).orElse(null);
     }
 
@@ -90,17 +88,22 @@ public class CategoryService {
             );
         }
 
-        if (request.getCreatedDate() != null) {
+        if (request.getStartDate() != null) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("createdDate"), request.getCreatedDate()));
+                    criteriaBuilder.greaterThanOrEqualTo(root.get("createdDate"), request.getStartDate()));
         }
 
-        if (request.getLastUpdatedDate() != null) {
+        if (request.getEndDate() != null) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("lastUpdatedDate"), request.getLastUpdatedDate()));
+                    criteriaBuilder.lessThanOrEqualTo(root.get("createdDate"), request.getEndDate()));
         }
 
-        Pageable pageable = new OffsetBasedPageRequest(request.getOffset(), request.getLimit());
+
+        var sort = Sort.by(
+                Sort.Order.desc("createdDate"),
+                Sort.Order.desc("lastUpdatedDate"));
+
+        Pageable pageable = new OffsetBasedPageRequest(request.getOffset(), request.getLimit(), sort);
 
         Page<Category> categoryPage = categoryRepository.findAll(spec, pageable);
 

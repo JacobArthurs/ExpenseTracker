@@ -8,6 +8,6 @@ import java.sql.Timestamp;
 public class ExpectedCategoryDistributionSearchRequestDto extends PaginatedRequest {
     private Long id;
     private Long categoryId;
-    private Timestamp createdDate;
-    private Timestamp lastUpdatedDate;
+    private Timestamp startDate;
+    private Timestamp endDate;
 }

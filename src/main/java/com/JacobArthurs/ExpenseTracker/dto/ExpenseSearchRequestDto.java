@@ -20,7 +20,7 @@ public class ExpenseSearchRequestDto extends PaginatedRequest {
     @Size(max = 200)
     private String overviewText;
 
-    private Timestamp createdDate;
+    private Timestamp startDate;
 
-    private Timestamp lastUpdatedDate;
+    private Timestamp endDate;
 }
