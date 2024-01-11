@@ -2,6 +2,7 @@ package com.JacobArthurs.ExpenseTracker.util;
 
 import com.JacobArthurs.ExpenseTracker.dto.ExpenseRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.ExpenseDto;
+import com.JacobArthurs.ExpenseTracker.dto.PaginatedResponse;
 import com.JacobArthurs.ExpenseTracker.model.Expense;
 import com.JacobArthurs.ExpenseTracker.service.CategoryService;
 
@@ -10,10 +11,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ExpenseUtil {
-    public static List<ExpenseDto> convertObjectListToDtoList(List<Expense> expenses) {
-        return expenses.stream()
+    public static PaginatedResponse<ExpenseDto> convertPaginatedToPaginatedDto(PaginatedResponse<Expense> paginatedExpense) {
+        List<ExpenseDto> expenseDtos = paginatedExpense.getData().stream()
                 .map(ExpenseDto::new)
                 .collect(Collectors.toList());
+
+        return new PaginatedResponse<>(paginatedExpense.getLimit(), paginatedExpense.getOffset(), paginatedExpense.getTotal(), expenseDtos);
     }
 
     public static Expense convertRequestToObject(ExpenseRequestDto request, CategoryService categoryService) {

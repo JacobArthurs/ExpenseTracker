@@ -1,6 +1,8 @@
 package com.JacobArthurs.ExpenseTracker.controller;
 import com.JacobArthurs.ExpenseTracker.dto.ExpenseRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.ExpenseDto;
+import com.JacobArthurs.ExpenseTracker.dto.ExpenseSearchRequestDto;
+import com.JacobArthurs.ExpenseTracker.dto.PaginatedResponse;
 import com.JacobArthurs.ExpenseTracker.service.ExpenseService;
 import com.JacobArthurs.ExpenseTracker.util.ExpenseUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,13 +25,6 @@ public class ExpenseController {
         this.expenseService = expenseService;
     }
 
-    @GetMapping()
-    @Operation(summary = "Get all expenses", description = "Returns all expenses")
-    public ResponseEntity<List<ExpenseDto>> getAllExpenses() {
-        var expenses = expenseService.getAllExpenses();
-        return ResponseEntity.ok(ExpenseUtil.convertObjectListToDtoList(expenses));
-    }
-
     @GetMapping("/{id}")
     @Operation(summary = "Get an expense by id", description = "Returns an expense as per the id")
     public ResponseEntity<ExpenseDto> getExpenseById(@PathVariable Long id) {
@@ -39,6 +34,13 @@ public class ExpenseController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PostMapping("/Search")
+    @Operation(summary = "Search expenses with pagination", description = "Returns paginated expenses based on search criteria")
+    public ResponseEntity<PaginatedResponse<ExpenseDto>> getAllExpenses(@RequestBody @Valid ExpenseSearchRequestDto request) {
+        var expenses = expenseService.searchExpenses(request);
+        return ResponseEntity.ok(ExpenseUtil.convertPaginatedToPaginatedDto(expenses));
     }
 
     @PostMapping
