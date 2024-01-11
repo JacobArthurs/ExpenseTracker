@@ -36,17 +36,23 @@ public class CategoryService {
 
     public Category createCategory(CategoryRequestDto request) {
         var category = CategoryUtil.convertRequestToObject(request);
+
         category.setCreatedDate(new Timestamp(System.currentTimeMillis()));
 
         return categoryRepository.save(category);
     }
 
     public Category updateCategory(Long id, CategoryRequestDto request) {
-        if (categoryRepository.existsById(id)) {
-            var category = CategoryUtil.convertRequestToObject(request);
-            category.setId(id);
+        var category = categoryRepository.findById(id);
 
-            return categoryRepository.save(category);
+        if (category.isPresent()) {
+            var updateCategory = category.get();
+
+            updateCategory.setTitle(request.getTitle());
+            updateCategory.setDescription(request.getDescription());
+            updateCategory.setLastUpdatedDate(new Timestamp(System.currentTimeMillis()));
+
+            return categoryRepository.save(updateCategory);
         } else {
             return null;
         }
@@ -101,7 +107,8 @@ public class CategoryService {
 
         var sort = Sort.by(
                 Sort.Order.desc("createdDate"),
-                Sort.Order.desc("lastUpdatedDate"));
+                Sort.Order.desc("lastUpdatedDate"),
+                Sort.Order.asc("id"));
 
         Pageable pageable = new OffsetBasedPageRequest(request.getOffset(), request.getLimit(), sort);
 

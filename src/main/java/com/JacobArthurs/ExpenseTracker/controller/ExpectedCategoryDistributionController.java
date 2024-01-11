@@ -2,7 +2,6 @@ package com.JacobArthurs.ExpenseTracker.controller;
 
 import com.JacobArthurs.ExpenseTracker.dto.*;
 import com.JacobArthurs.ExpenseTracker.service.ExpectedCategoryDistributionService;
-import com.JacobArthurs.ExpenseTracker.util.CategoryUtil;
 import com.JacobArthurs.ExpenseTracker.util.ExpectedCategoryDistributionUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,8 +9,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/expected-category-distribution")
@@ -27,7 +24,7 @@ public class ExpectedCategoryDistributionController {
     @GetMapping("/{id}")
     @Operation(summary = "Get an expected category distribution by id", description = "Returns an expected category distribution as per the id")
     public ResponseEntity<ExpectedCategoryDistributionDto> getExpectedCategoryDistributionById(@PathVariable Long id) {
-        var category = expectedCategoryDistributionService.getCategoryById(id);
+        var category = expectedCategoryDistributionService.getExpectedCategoryDistributionById(id);
         if (category != null) {
             return ResponseEntity.ok(new ExpectedCategoryDistributionDto(category));
         } else {
@@ -45,14 +42,14 @@ public class ExpectedCategoryDistributionController {
     @PostMapping
     @Operation(summary = "Create an expected category distribution", description = "Creates an expected category distribution as per the request body")
     public ResponseEntity<ExpectedCategoryDistributionDto> createExpectedCategoryDistribution(@RequestBody @Valid ExpectedCategoryDistributionRequestDto request) {
-        var category = expectedCategoryDistributionService.createCategory(request);
+        var category = expectedCategoryDistributionService.createExpectedCategoryDistribution(request);
         return ResponseEntity.ok(new ExpectedCategoryDistributionDto(category));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update an expected category distribution", description = "Updates an expected category distribution as per the id and request body")
     public ResponseEntity<ExpectedCategoryDistributionDto> updateExpectedCategoryDistribution(@PathVariable Long id, @RequestBody @Valid ExpectedCategoryDistributionRequestDto request) {
-        var category = expectedCategoryDistributionService.updateCategory(id, request);
+        var category = expectedCategoryDistributionService.updateExpectedCategoryDistribution(id, request);
         if (category != null) {
             return ResponseEntity.ok(new ExpectedCategoryDistributionDto(category));
         } else {
@@ -63,7 +60,7 @@ public class ExpectedCategoryDistributionController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete an expected category distribution", description = "Deletes an expected category distribution as per the id")
     public ResponseEntity<Void> deleteExpectedCategoryDistribution(@PathVariable Long id) {
-        var deleted = expectedCategoryDistributionService.deleteCategory(id);
+        var deleted = expectedCategoryDistributionService.deleteExpectedCategoryDistribution(id);
         if (deleted) {
             return ResponseEntity.noContent().build();
         } else {

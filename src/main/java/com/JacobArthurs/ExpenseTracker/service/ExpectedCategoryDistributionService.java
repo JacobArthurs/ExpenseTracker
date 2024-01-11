@@ -32,29 +32,34 @@ public class ExpectedCategoryDistributionService {
         return expectedCategoryDistributionRepository.findAll();
     }
 
-    public ExpectedCategoryDistribution getCategoryById(Long id) {
+    public ExpectedCategoryDistribution getExpectedCategoryDistributionById(Long id) {
         return expectedCategoryDistributionRepository.findById(id).orElse(null);
     }
 
-    public ExpectedCategoryDistribution createCategory(ExpectedCategoryDistributionRequestDto request) {
+    public ExpectedCategoryDistribution createExpectedCategoryDistribution(ExpectedCategoryDistributionRequestDto request) {
         var expectedCategoryDistribution = ExpectedCategoryDistributionUtil.convertRequestToObject(request, categoryService);
         expectedCategoryDistribution.setCreatedDate(new Timestamp(System.currentTimeMillis()));
 
         return expectedCategoryDistributionRepository.save(expectedCategoryDistribution);
     }
 
-    public ExpectedCategoryDistribution updateCategory(Long id, ExpectedCategoryDistributionRequestDto request) {
-        if (expectedCategoryDistributionRepository.existsById(id)) {
-            var expectedCategoryDistribution = ExpectedCategoryDistributionUtil.convertRequestToObject(request, categoryService);
-            expectedCategoryDistribution.setId(id);
+    public ExpectedCategoryDistribution updateExpectedCategoryDistribution(Long id, ExpectedCategoryDistributionRequestDto request) {
+        var expectedCategoryDistribution = expectedCategoryDistributionRepository.findById(id);
 
-            return expectedCategoryDistributionRepository.save(expectedCategoryDistribution);
+        if (expectedCategoryDistribution.isPresent()) {
+            var updateDistribution = expectedCategoryDistribution.get();
+
+            updateDistribution.setMinimumDistribution(request.getMinimumDistribution());
+            updateDistribution.setMaximumDistribution(request.getMaximumDistribution());
+            updateDistribution.setLastUpdatedDate(new Timestamp(System.currentTimeMillis()));
+
+            return expectedCategoryDistributionRepository.save(updateDistribution);
         } else {
             return null;
         }
     }
 
-    public boolean deleteCategory(Long id) {
+    public boolean deleteExpectedCategoryDistribution(Long id) {
         if (expectedCategoryDistributionRepository.existsById(id)) {
             expectedCategoryDistributionRepository.deleteById(id);
             return true;
@@ -88,7 +93,8 @@ public class ExpectedCategoryDistributionService {
 
         var sort = Sort.by(
                 Sort.Order.desc("createdDate"),
-                Sort.Order.desc("lastUpdatedDate"));
+                Sort.Order.desc("lastUpdatedDate"),
+                Sort.Order.asc("id"));
 
         Pageable pageable = new OffsetBasedPageRequest(request.getOffset(), request.getLimit(), sort);
 

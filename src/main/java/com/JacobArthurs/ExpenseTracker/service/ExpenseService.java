@@ -44,11 +44,17 @@ public class ExpenseService {
     }
 
     public Expense updateExpense(Long id, ExpenseRequestDto request) {
-        if (expenseRepository.existsById(id)) {
-            var expense = ExpenseUtil.convertRequestToObject(request, categoryService);
-            expense.setId(id);
+        var expense = expenseRepository.findById(id);
 
-            return expenseRepository.save(expense);
+        if (expense.isPresent()) {
+            var updateExpense = expense.get();
+
+            updateExpense.setCategory(categoryService.getCategoryById(request.getCategoryId()));
+            updateExpense.setTitle(request.getTitle());
+            updateExpense.setDescription(request.getDescription());
+            updateExpense.setLastUpdatedDate(new Timestamp(System.currentTimeMillis()));
+
+            return expenseRepository.save(updateExpense);
         } else {
             return null;
         }
@@ -107,7 +113,8 @@ public class ExpenseService {
 
         var sort = Sort.by(
                 Sort.Order.desc("createdDate"),
-                Sort.Order.desc("lastUpdatedDate"));
+                Sort.Order.desc("lastUpdatedDate"),
+                Sort.Order.asc("id"));
 
         Pageable pageable = new OffsetBasedPageRequest(request.getOffset(), request.getLimit(), sort);
 
