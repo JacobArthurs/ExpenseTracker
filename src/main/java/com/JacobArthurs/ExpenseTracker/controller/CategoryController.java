@@ -1,7 +1,6 @@
 package com.JacobArthurs.ExpenseTracker.controller;
 
-import com.JacobArthurs.ExpenseTracker.dto.CategoryDto;
-import com.JacobArthurs.ExpenseTracker.dto.CategoryRequestDto;
+import com.JacobArthurs.ExpenseTracker.dto.*;
 import com.JacobArthurs.ExpenseTracker.service.CategoryService;
 import com.JacobArthurs.ExpenseTracker.util.CategoryUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,8 +9,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/category")
@@ -24,13 +21,6 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping()
-    @Operation(summary = "Get all categories", description = "Returns all categories")
-    public ResponseEntity<List<CategoryDto>> getAllCategories() {
-        var categories = categoryService.getAllCategories();
-        return ResponseEntity.ok(CategoryUtil.convertObjectListToDtoList(categories));
-    }
-
     @GetMapping("/{id}")
     @Operation(summary = "Get category by id", description = "Returns a category as per the id")
     public ResponseEntity<CategoryDto> getCategoryById(@PathVariable Long id) {
@@ -40,6 +30,13 @@ public class CategoryController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PostMapping("/Search")
+    @Operation(summary = "Search categories with pagination", description = "Returns paginated categories based on search criteria")
+    public ResponseEntity<PaginatedResponse<CategoryDto>> getAllExpenses(@RequestBody @Valid CategorySearchRequestDto request) {
+        var categories = categoryService.searchCategories(request);
+        return ResponseEntity.ok(CategoryUtil.convertPaginatedToPaginatedDto(categories));
     }
 
     @PostMapping
