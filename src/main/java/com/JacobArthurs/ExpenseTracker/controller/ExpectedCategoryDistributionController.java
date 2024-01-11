@@ -1,8 +1,8 @@
 package com.JacobArthurs.ExpenseTracker.controller;
 
-import com.JacobArthurs.ExpenseTracker.dto.ExpectedCategoryDistributionDto;
-import com.JacobArthurs.ExpenseTracker.dto.ExpectedCategoryDistributionRequestDto;
+import com.JacobArthurs.ExpenseTracker.dto.*;
 import com.JacobArthurs.ExpenseTracker.service.ExpectedCategoryDistributionService;
+import com.JacobArthurs.ExpenseTracker.util.CategoryUtil;
 import com.JacobArthurs.ExpenseTracker.util.ExpectedCategoryDistributionUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,13 +24,6 @@ public class ExpectedCategoryDistributionController {
         this.expectedCategoryDistributionService = expectedCategoryDistributionService;
     }
 
-    @GetMapping()
-    @Operation(summary = "Get all expected category distributions", description = "Returns all expected category distributions")
-    public ResponseEntity<List<ExpectedCategoryDistributionDto>> getAllExpectedCategoryDistributions() {
-        var categories = expectedCategoryDistributionService.getAllCategories();
-        return ResponseEntity.ok(ExpectedCategoryDistributionUtil.convertObjectListToDtoList(categories));
-    }
-
     @GetMapping("/{id}")
     @Operation(summary = "Get an expected category distribution by id", description = "Returns an expected category distribution as per the id")
     public ResponseEntity<ExpectedCategoryDistributionDto> getExpectedCategoryDistributionById(@PathVariable Long id) {
@@ -40,6 +33,13 @@ public class ExpectedCategoryDistributionController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PostMapping("/Search")
+    @Operation(summary = "Search expected category distributions with pagination", description = "Returns paginated expected category distributions based on search criteria")
+    public ResponseEntity<PaginatedResponse<ExpectedCategoryDistributionDto>> getAllExpenses(@RequestBody @Valid ExpectedCategoryDistributionSearchRequestDto request) {
+        var expectedCategoryDistributions = expectedCategoryDistributionService.searchExpectedCategoryDistributions(request);
+        return ResponseEntity.ok(ExpectedCategoryDistributionUtil.convertPaginatedToPaginatedDto(expectedCategoryDistributions));
     }
 
     @PostMapping

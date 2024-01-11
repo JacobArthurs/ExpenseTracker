@@ -1,7 +1,10 @@
 package com.JacobArthurs.ExpenseTracker.util;
 
+import com.JacobArthurs.ExpenseTracker.dto.CategoryDto;
 import com.JacobArthurs.ExpenseTracker.dto.ExpectedCategoryDistributionDto;
 import com.JacobArthurs.ExpenseTracker.dto.ExpectedCategoryDistributionRequestDto;
+import com.JacobArthurs.ExpenseTracker.dto.PaginatedResponse;
+import com.JacobArthurs.ExpenseTracker.model.Category;
 import com.JacobArthurs.ExpenseTracker.model.ExpectedCategoryDistribution;
 import com.JacobArthurs.ExpenseTracker.service.CategoryService;
 
@@ -10,10 +13,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ExpectedCategoryDistributionUtil {
-    public static List<ExpectedCategoryDistributionDto> convertObjectListToDtoList(List<ExpectedCategoryDistribution> expectedCategoryDistributions) {
-        return expectedCategoryDistributions.stream()
+    public static PaginatedResponse<ExpectedCategoryDistributionDto> convertPaginatedToPaginatedDto(PaginatedResponse<ExpectedCategoryDistribution> paginatedExpectedCategoryDistributions) {
+        List<ExpectedCategoryDistributionDto> expectedCategoryDistributionDtos = paginatedExpectedCategoryDistributions.getData().stream()
                 .map(ExpectedCategoryDistributionDto::new)
                 .collect(Collectors.toList());
+
+        return new PaginatedResponse<>(paginatedExpectedCategoryDistributions.getLimit(), paginatedExpectedCategoryDistributions.getOffset(), paginatedExpectedCategoryDistributions.getTotal(), expectedCategoryDistributionDtos);
     }
 
     public static ExpectedCategoryDistribution convertRequestToObject(ExpectedCategoryDistributionRequestDto request, CategoryService categoryService) {
