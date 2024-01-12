@@ -11,9 +11,5 @@ public class ExpectedCategoryDistributionRequestDto {
 
     @NotNull
     @Max(100)
-    private int minimumDistribution;
-
-    @NotNull
-    @Max(100)
-    private int maximumDistribution;
+    private int distribution;
 }

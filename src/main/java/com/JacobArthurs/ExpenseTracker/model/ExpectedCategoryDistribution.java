@@ -20,11 +20,8 @@ public class ExpectedCategoryDistribution {
     @JoinColumn(name = "category_id", nullable = false, referencedColumnName = "id")
     private Category category;
 
-    @Column(name = "minimum_distribution", nullable = false)
-    private int minimumDistribution;
-
-    @Column(name = "maximum_distribution", nullable = false)
-    private int maximumDistribution;
+    @Column(name = "distribution", nullable = false)
+    private int distribution;
 
     @Column(name = "created_date", nullable = false)
     private Timestamp createdDate;

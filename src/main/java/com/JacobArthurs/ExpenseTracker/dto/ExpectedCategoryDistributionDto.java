@@ -10,16 +10,14 @@ import java.sql.Timestamp;
 public class ExpectedCategoryDistributionDto {
     private Long id;
     private Long categoryId;
-    private int minimumDistribution;
-    private int maximumDistribution;
+    private int distribution;
     private Timestamp createdDate;
     private Timestamp lastUpdatedDate;
 
     public ExpectedCategoryDistributionDto(ExpectedCategoryDistribution expectedCategoryDistribution){
         this.id = expectedCategoryDistribution.getId();
         this.categoryId = expectedCategoryDistribution.getCategory().getId();
-        this.minimumDistribution = expectedCategoryDistribution.getMinimumDistribution();
-        this.maximumDistribution = expectedCategoryDistribution.getMaximumDistribution();
+        this.distribution = expectedCategoryDistribution.getDistribution();
         this.createdDate = expectedCategoryDistribution.getCreatedDate();
         this.lastUpdatedDate = expectedCategoryDistribution.getLastUpdatedDate();
     }

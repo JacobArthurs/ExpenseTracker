@@ -23,8 +23,7 @@ public class ExpectedCategoryDistributionUtil {
 
     public static ExpectedCategoryDistribution convertRequestToObject(ExpectedCategoryDistributionRequestDto request, CategoryService categoryService) {
         var expectedCategoryDistribution = new ExpectedCategoryDistribution();
-        expectedCategoryDistribution.setMinimumDistribution(request.getMinimumDistribution());
-        expectedCategoryDistribution.setMaximumDistribution(request.getMaximumDistribution());
+        expectedCategoryDistribution.setDistribution(request.getDistribution());
         expectedCategoryDistribution.setLastUpdatedDate(new Timestamp(System.currentTimeMillis()));
 
         var category = categoryService.getCategoryById(request.getCategoryId());

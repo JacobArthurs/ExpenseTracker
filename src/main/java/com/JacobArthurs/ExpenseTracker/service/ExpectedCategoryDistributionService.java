@@ -49,8 +49,7 @@ public class ExpectedCategoryDistributionService {
         if (expectedCategoryDistribution.isPresent()) {
             var updateDistribution = expectedCategoryDistribution.get();
 
-            updateDistribution.setMinimumDistribution(request.getMinimumDistribution());
-            updateDistribution.setMaximumDistribution(request.getMaximumDistribution());
+            updateDistribution.setDistribution(request.getDistribution());
             updateDistribution.setLastUpdatedDate(new Timestamp(System.currentTimeMillis()));
 
             return expectedCategoryDistributionRepository.save(updateDistribution);
