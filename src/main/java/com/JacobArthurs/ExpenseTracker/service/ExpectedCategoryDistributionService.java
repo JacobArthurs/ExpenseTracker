@@ -1,5 +1,6 @@
 package com.JacobArthurs.ExpenseTracker.service;
 
+import com.JacobArthurs.ExpenseTracker.dto.DistributionDto;
 import com.JacobArthurs.ExpenseTracker.dto.ExpectedCategoryDistributionRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.ExpectedCategoryDistributionSearchRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.PaginatedResponse;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ExpectedCategoryDistributionService {
@@ -28,8 +30,22 @@ public class ExpectedCategoryDistributionService {
         this.categoryService = categoryService;
     }
 
-    public List<ExpectedCategoryDistribution> getAllCategories() {
+    public List<ExpectedCategoryDistribution> getAllExpectedCategoryDistributions() {
         return expectedCategoryDistributionRepository.findAll();
+    }
+
+    public DistributionDto getAllDistributions() {
+        var expectedCategoryDistributions = expectedCategoryDistributionRepository.findAll();
+
+        var categories = expectedCategoryDistributions.stream()
+                .map(distribution -> distribution.getCategory().getTitle())
+                .collect(Collectors.toList());
+
+        var distributions = expectedCategoryDistributions.stream()
+                .map(ExpectedCategoryDistribution::getDistribution)
+                .collect(Collectors.toList());
+
+        return new DistributionDto(categories, distributions);
     }
 
     public ExpectedCategoryDistribution getExpectedCategoryDistributionById(Long id) {

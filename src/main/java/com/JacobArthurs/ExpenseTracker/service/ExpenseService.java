@@ -1,8 +1,6 @@
 package com.JacobArthurs.ExpenseTracker.service;
 
-import com.JacobArthurs.ExpenseTracker.dto.ExpenseRequestDto;
-import com.JacobArthurs.ExpenseTracker.dto.ExpenseSearchRequestDto;
-import com.JacobArthurs.ExpenseTracker.dto.PaginatedResponse;
+import com.JacobArthurs.ExpenseTracker.dto.*;
 import com.JacobArthurs.ExpenseTracker.model.Expense;
 import com.JacobArthurs.ExpenseTracker.repository.ExpenseRepository;
 import com.JacobArthurs.ExpenseTracker.util.ExpenseUtil;
@@ -16,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ExpenseService {
@@ -121,5 +120,30 @@ public class ExpenseService {
         Page<Expense> expensePage = expenseRepository.findAll(spec, pageable);
 
         return new PaginatedResponse<>(request.getLimit(), request.getOffset(), expensePage.getTotalElements(), expensePage.getContent());
+    }
+
+    public DistributionDto getCurrentDistribution (CurrentDistributionRequestDto request) {
+        var startDate = Timestamp.valueOf(request.getCurrentDate().toLocalDateTime().minusMonths(1));
+
+        Specification<Expense> spec = Specification.where(null);
+        spec = spec.and((root, query, criteriaBuilder) ->
+                criteriaBuilder.between(root.get("createdDate"), startDate, request.getCurrentDate()));
+
+        var groupedExpenses = expenseRepository
+                .findAll(spec)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        expense -> expense.getCategory().getTitle()
+                ));
+        var categories = groupedExpenses.keySet().stream().toList();
+
+        var totalCount = groupedExpenses.values().stream()
+                .mapToLong(List::size)
+                .sum();
+        var distributions = categories.stream()
+                .map(key -> (int) ((double) groupedExpenses.get(key).size() / totalCount * 100))
+                .toList();
+
+        return new DistributionDto(groupedExpenses.keySet().stream().toList(), distributions);
     }
 }

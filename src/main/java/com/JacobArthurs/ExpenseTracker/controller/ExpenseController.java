@@ -1,8 +1,5 @@
 package com.JacobArthurs.ExpenseTracker.controller;
-import com.JacobArthurs.ExpenseTracker.dto.ExpenseRequestDto;
-import com.JacobArthurs.ExpenseTracker.dto.ExpenseDto;
-import com.JacobArthurs.ExpenseTracker.dto.ExpenseSearchRequestDto;
-import com.JacobArthurs.ExpenseTracker.dto.PaginatedResponse;
+import com.JacobArthurs.ExpenseTracker.dto.*;
 import com.JacobArthurs.ExpenseTracker.service.ExpenseService;
 import com.JacobArthurs.ExpenseTracker.util.ExpenseUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,8 +8,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/expense")
@@ -34,6 +29,12 @@ public class ExpenseController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PostMapping("/current-distribution")
+    @Operation(summary = "Get the current distribution", description = "Returns current distributions based on the provided start date")
+    public ResponseEntity<DistributionDto> getCurrentDistribution(@RequestBody @Valid CurrentDistributionRequestDto request) {
+        return ResponseEntity.ok(expenseService.getCurrentDistribution(request));
     }
 
     @PostMapping("/Search")
