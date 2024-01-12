@@ -38,7 +38,7 @@ public class ExpectedCategoryDistributionController {
         return ResponseEntity.ok(expectedCategoryDistributionService.getAllDistributions());
     }
 
-    @PostMapping("/Search")
+    @PostMapping("/search")
     @Operation(summary = "Search expected category distributions with pagination", description = "Returns paginated expected category distributions based on search criteria")
     public ResponseEntity<PaginatedResponse<ExpectedCategoryDistributionDto>> getAllExpenses(@RequestBody @Valid ExpectedCategoryDistributionSearchRequestDto request) {
         var expectedCategoryDistributions = expectedCategoryDistributionService.searchExpectedCategoryDistributions(request);

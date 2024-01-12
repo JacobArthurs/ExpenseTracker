@@ -37,7 +37,7 @@ public class ExpenseController {
         return ResponseEntity.ok(expenseService.getCurrentDistribution(request));
     }
 
-    @PostMapping("/Search")
+    @PostMapping("/search")
     @Operation(summary = "Search expenses with pagination", description = "Returns paginated expenses based on search criteria")
     public ResponseEntity<PaginatedResponse<ExpenseDto>> getAllExpenses(@RequestBody @Valid ExpenseSearchRequestDto request) {
         var expenses = expenseService.searchExpenses(request);

@@ -32,7 +32,7 @@ public class CategoryController {
         }
     }
 
-    @PostMapping("/Search")
+    @PostMapping("/search")
     @Operation(summary = "Search categories with pagination", description = "Returns paginated categories based on search criteria")
     public ResponseEntity<PaginatedResponse<CategoryDto>> getAllExpenses(@RequestBody @Valid CategorySearchRequestDto request) {
         var categories = categoryService.searchCategories(request);
