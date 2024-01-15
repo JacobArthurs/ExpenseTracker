@@ -3,6 +3,7 @@ import com.JacobArthurs.ExpenseTracker.dto.*;
 import com.JacobArthurs.ExpenseTracker.service.ExpenseService;
 import com.JacobArthurs.ExpenseTracker.util.ExpenseUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/expense")
 @Tag(name="Expense controller", description = "CRUD endpoints for expenses.")
+@SecurityRequirement(name = "bearerAuth")
 public class ExpenseController {
     private final ExpenseService expenseService;
 

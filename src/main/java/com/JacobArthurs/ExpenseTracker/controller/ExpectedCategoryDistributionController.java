@@ -4,6 +4,7 @@ import com.JacobArthurs.ExpenseTracker.dto.*;
 import com.JacobArthurs.ExpenseTracker.service.ExpectedCategoryDistributionService;
 import com.JacobArthurs.ExpenseTracker.util.ExpectedCategoryDistributionUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/expected-category-distribution")
 @Tag(name="Expected category distribution controller", description = "CRUD endpoints for expected category distributions.")
+@SecurityRequirement(name = "bearerAuth")
 public class ExpectedCategoryDistributionController {
     private final ExpectedCategoryDistributionService expectedCategoryDistributionService;
 
