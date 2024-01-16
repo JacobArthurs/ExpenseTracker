@@ -34,4 +34,8 @@ public class Category {
 
     @OneToOne(mappedBy = "category", cascade = CascadeType.REMOVE)
     private ExpectedCategoryDistribution expectedCategoryDistribution;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
+    private User createdBy;
 }

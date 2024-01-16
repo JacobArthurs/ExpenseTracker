@@ -30,4 +30,8 @@ public class Expense {
 
     @Column(name = "last_updated_date", nullable = false)
     private Timestamp lastUpdatedDate;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
+    private User createdBy;
 }
