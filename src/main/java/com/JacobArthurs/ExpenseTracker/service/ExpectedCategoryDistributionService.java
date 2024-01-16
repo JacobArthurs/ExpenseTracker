@@ -23,11 +23,13 @@ import java.util.stream.Collectors;
 public class ExpectedCategoryDistributionService {
     private final ExpectedCategoryDistributionRepository expectedCategoryDistributionRepository;
     private final CategoryService categoryService;
+    public final CurrentUserProvider currentUserProvider;
 
     @Autowired
-    public ExpectedCategoryDistributionService(ExpectedCategoryDistributionRepository expectedCategoryDistribution, CategoryService categoryService) {
+    public ExpectedCategoryDistributionService(ExpectedCategoryDistributionRepository expectedCategoryDistribution, CategoryService categoryService, CurrentUserProvider currentUserProvider) {
         this.expectedCategoryDistributionRepository = expectedCategoryDistribution;
         this.categoryService = categoryService;
+        this.currentUserProvider = currentUserProvider;
     }
 
     public List<ExpectedCategoryDistribution> getAllExpectedCategoryDistributions() {

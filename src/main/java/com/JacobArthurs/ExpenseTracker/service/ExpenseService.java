@@ -20,11 +20,13 @@ import java.util.stream.Collectors;
 public class ExpenseService {
     private final ExpenseRepository expenseRepository;
     private final CategoryService categoryService;
+    public final CurrentUserProvider currentUserProvider;
 
     @Autowired
-    public ExpenseService(ExpenseRepository expenseRepository, CategoryService categoryService) {
+    public ExpenseService(ExpenseRepository expenseRepository, CategoryService categoryService, CurrentUserProvider currentUserProvider) {
         this.expenseRepository = expenseRepository;
         this.categoryService = categoryService;
+        this.currentUserProvider = currentUserProvider;
     }
 
     public List<Expense> getAllExpenses() {

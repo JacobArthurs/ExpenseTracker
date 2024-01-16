@@ -20,10 +20,12 @@ import java.util.List;
 @Service
 public class CategoryService {
     private final CategoryRepository categoryRepository;
+    public final CurrentUserProvider currentUserProvider;
 
     @Autowired
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, CurrentUserProvider currentUserProvider) {
         this.categoryRepository = categoryRepository;
+        this.currentUserProvider = currentUserProvider;
     }
 
     public List<Category> getAllCategories() {
