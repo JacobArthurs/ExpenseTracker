@@ -26,6 +26,16 @@ Before you begin, ensure you have met the following requirements:
 ## Usage
 - To explore endpoints and view documentation navigate to: `http://localhost:8080/api/swagger-ui`.
 
+- The default user for authentication is:
+  - Username: default
+  - Password: password
+  - This user has all dummy data populated.
+
+- Admin user for authentication is:
+  - Username: admin
+  - Password: password
+  - This user has no data but has access to admin-level endpoints.
+
 - To clear docker postgres persistent storage run command:
     ```
     docker volume rm expensetrackerapi_postgres-data
