@@ -88,7 +88,7 @@ VALUES
 DO $$
 DECLARE
     distribution_record RECORD;
-    user_id INT;
+    user_id INT := 1;
     category_id INT;
     min_distribution INT;
     max_distribution INT;
