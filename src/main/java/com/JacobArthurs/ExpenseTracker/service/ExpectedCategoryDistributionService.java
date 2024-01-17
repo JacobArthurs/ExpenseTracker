@@ -4,6 +4,7 @@ import com.JacobArthurs.ExpenseTracker.dto.DistributionDto;
 import com.JacobArthurs.ExpenseTracker.dto.ExpectedCategoryDistributionRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.ExpectedCategoryDistributionSearchRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.PaginatedResponse;
+import com.JacobArthurs.ExpenseTracker.enumerator.UserRole;
 import com.JacobArthurs.ExpenseTracker.model.ExpectedCategoryDistribution;
 import com.JacobArthurs.ExpenseTracker.repository.ExpectedCategoryDistributionRepository;
 import com.JacobArthurs.ExpenseTracker.util.ExpectedCategoryDistributionUtil;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,7 +39,9 @@ public class ExpectedCategoryDistributionService {
     }
 
     public DistributionDto getAllDistributions() {
-        var expectedCategoryDistributions = expectedCategoryDistributionRepository.findAll();
+        var sort = Sort.by(Sort.Order.asc("id"));
+
+        var expectedCategoryDistributions = expectedCategoryDistributionRepository.findAllByCreatedBy(currentUserProvider.getCurrentUser(), sort);
 
         var categories = expectedCategoryDistributions.stream()
                 .map(distribution -> distribution.getCategory().getTitle())
@@ -51,42 +55,53 @@ public class ExpectedCategoryDistributionService {
     }
 
     public ExpectedCategoryDistribution getExpectedCategoryDistributionById(Long id) {
-        return expectedCategoryDistributionRepository.findById(id).orElse(null);
+        var expectedCategoryDistribution = expectedCategoryDistributionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Expected category distribution not found with ID: " + id));
+
+        if (doesCurrentUserNotOwnExpectedCategoryDistribution(expectedCategoryDistribution))
+            throw new RuntimeException("You are not authorized to get an expected category distribution that is not yours.");
+        else
+            return expectedCategoryDistribution;
     }
 
     public ExpectedCategoryDistribution createExpectedCategoryDistribution(ExpectedCategoryDistributionRequestDto request) {
         var expectedCategoryDistribution = ExpectedCategoryDistributionUtil.convertRequestToObject(request, categoryService);
+        expectedCategoryDistribution.setCreatedBy(currentUserProvider.getCurrentUser());
         expectedCategoryDistribution.setCreatedDate(new Timestamp(System.currentTimeMillis()));
 
         return expectedCategoryDistributionRepository.save(expectedCategoryDistribution);
     }
 
     public ExpectedCategoryDistribution updateExpectedCategoryDistribution(Long id, ExpectedCategoryDistributionRequestDto request) {
-        var expectedCategoryDistribution = expectedCategoryDistributionRepository.findById(id);
+        var expectedCategoryDistribution = expectedCategoryDistributionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Expected category distribution not found with ID: " + id));
 
-        if (expectedCategoryDistribution.isPresent()) {
-            var updateDistribution = expectedCategoryDistribution.get();
+        expectedCategoryDistribution.setDistribution(request.getDistribution());
+        expectedCategoryDistribution.setLastUpdatedDate(new Timestamp(System.currentTimeMillis()));
 
-            updateDistribution.setDistribution(request.getDistribution());
-            updateDistribution.setLastUpdatedDate(new Timestamp(System.currentTimeMillis()));
-
-            return expectedCategoryDistributionRepository.save(updateDistribution);
-        } else {
-            return null;
-        }
+        if (doesCurrentUserNotOwnExpectedCategoryDistribution(expectedCategoryDistribution))
+            throw new RuntimeException("You are not authorized to get an expected category distribution that is not yours.");
+        else
+            return expectedCategoryDistributionRepository.save(expectedCategoryDistribution);
     }
 
     public boolean deleteExpectedCategoryDistribution(Long id) {
-        if (expectedCategoryDistributionRepository.existsById(id)) {
+        var expectedCategoryDistribution = expectedCategoryDistributionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Expected category distribution not found with ID: " + id));
+
+        if (doesCurrentUserNotOwnExpectedCategoryDistribution(expectedCategoryDistribution))
+            throw new RuntimeException("You are not authorized to get an expected category distribution that is not yours.");
+        else {
             expectedCategoryDistributionRepository.deleteById(id);
             return true;
-        } else {
-            return false;
         }
     }
 
     public PaginatedResponse<ExpectedCategoryDistribution> searchExpectedCategoryDistributions(ExpectedCategoryDistributionSearchRequestDto request) {
         Specification<ExpectedCategoryDistribution> spec = Specification.where(null);
+
+        spec = spec.and((root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("createdBy"), currentUserProvider.getCurrentUser()));
 
         if (request.getId() != null) {
             spec = spec.and((root, query, criteriaBuilder) ->
@@ -118,5 +133,11 @@ public class ExpectedCategoryDistributionService {
         Page<ExpectedCategoryDistribution> categoryPage = expectedCategoryDistributionRepository.findAll(spec, pageable);
 
         return new PaginatedResponse<>(request.getLimit(), request.getOffset(), categoryPage.getTotalElements(), categoryPage.getContent());
+    }
+
+    private boolean doesCurrentUserNotOwnExpectedCategoryDistribution(ExpectedCategoryDistribution expectedCategoryDistribution) {
+        var currentUser = currentUserProvider.getCurrentUser();
+        return !Objects.equals(expectedCategoryDistribution.getCreatedBy().getId(), currentUser.getId()) &&
+                !UserRole.ADMIN.equals(currentUser.getRole());
     }
 }

@@ -1,6 +1,7 @@
 package com.JacobArthurs.ExpenseTracker.service;
 
 import com.JacobArthurs.ExpenseTracker.dto.*;
+import com.JacobArthurs.ExpenseTracker.enumerator.UserRole;
 import com.JacobArthurs.ExpenseTracker.model.Expense;
 import com.JacobArthurs.ExpenseTracker.repository.ExpenseRepository;
 import com.JacobArthurs.ExpenseTracker.util.ExpenseUtil;
@@ -14,7 +15,9 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.TreeMap;
 
 @Service
 public class ExpenseService {
@@ -34,44 +37,54 @@ public class ExpenseService {
     }
 
     public Expense getExpenseById(Long id) {
-        return expenseRepository.findById(id).orElse(null);
+        var expense = expenseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Expense not found with ID: " + id));
+
+        if (doesCurrentUserNotOwnExpense(expense))
+            throw new RuntimeException("You are not authorized to get an expense that is not yours.");
+        else
+            return expense;
     }
 
     public Expense createExpense(ExpenseRequestDto request) {
         var expense = ExpenseUtil.convertRequestToObject(request, categoryService);
+
+        expense.setCreatedBy(currentUserProvider.getCurrentUser());
         expense.setCreatedDate(new Timestamp(System.currentTimeMillis()));
 
         return expenseRepository.save(expense);
     }
 
     public Expense updateExpense(Long id, ExpenseRequestDto request) {
-        var expense = expenseRepository.findById(id);
+        var expense = expenseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Expense not found with ID: " + id));;
 
-        if (expense.isPresent()) {
-            var updateExpense = expense.get();
+        if (doesCurrentUserNotOwnExpense(expense))
+            throw new RuntimeException("You are not authorized to update an expense that is not yours.");
 
-            updateExpense.setCategory(categoryService.getCategoryById(request.getCategoryId()));
-            updateExpense.setTitle(request.getTitle());
-            updateExpense.setDescription(request.getDescription());
-            updateExpense.setLastUpdatedDate(new Timestamp(System.currentTimeMillis()));
+        expense.setCategory(categoryService.getCategoryById(request.getCategoryId()));
+        expense.setTitle(request.getTitle());
+        expense.setDescription(request.getDescription());
+        expense.setLastUpdatedDate(new Timestamp(System.currentTimeMillis()));
 
-            return expenseRepository.save(updateExpense);
-        } else {
-            return null;
-        }
+        return expenseRepository.save(expense);
     }
 
     public boolean deleteExpense(Long id) {
-        if (expenseRepository.existsById(id)) {
-            expenseRepository.deleteById(id);
-            return true;
-        } else {
-            return false;
-        }
+        var expense = expenseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Expense not found with ID: " + id));
+        if (doesCurrentUserNotOwnExpense(expense))
+            throw new RuntimeException("You are not authorized to delete an expense that is not yours.");
+
+        expenseRepository.deleteById(id);
+        return true;
     }
 
     public PaginatedResponse<Expense> searchExpenses(ExpenseSearchRequestDto request) {
         Specification<Expense> spec = Specification.where(null);
+
+        spec = spec.and((root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("createdBy"), currentUserProvider.getCurrentUser()));
 
         if (request.getId() != null) {
             spec = spec.and((root, query, criteriaBuilder) ->
@@ -131,21 +144,39 @@ public class ExpenseService {
         spec = spec.and((root, query, criteriaBuilder) ->
                 criteriaBuilder.between(root.get("createdDate"), startDate, request.getCurrentDate()));
 
-        var groupedExpenses = expenseRepository
-                .findAll(spec)
-                .stream()
+        spec = spec.and((root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("createdBy"), currentUserProvider.getCurrentUser()));
+
+        var sort = Sort.by(Sort.Order.asc("category.id"));
+
+        var expenses = expenseRepository.findAll(spec, sort);
+
+        var groupedExpenses = expenses.stream()
                 .collect(Collectors.groupingBy(
-                        expense -> expense.getCategory().getTitle()
+                        expense -> expense.getCategory().getTitle(),
+                        TreeMap::new,
+                        Collectors.toList()
                 ));
-        var categories = groupedExpenses.keySet().stream().toList();
+
+        var categories = expenses.stream()
+                .map(expense -> expense.getCategory().getTitle())
+                .distinct()
+                .toList();
 
         var totalCount = groupedExpenses.values().stream()
                 .mapToLong(List::size)
                 .sum();
+
         var distributions = categories.stream()
                 .map(key -> (int) ((double) groupedExpenses.get(key).size() / totalCount * 100))
                 .toList();
 
-        return new DistributionDto(groupedExpenses.keySet().stream().toList(), distributions);
+        return new DistributionDto(categories, distributions);
+    }
+
+    private boolean doesCurrentUserNotOwnExpense(Expense expense) {
+        var currentUser = currentUserProvider.getCurrentUser();
+        return !Objects.equals(expense.getCreatedBy().getId(), currentUser.getId()) &&
+                !UserRole.ADMIN.equals(currentUser.getRole());
     }
 }

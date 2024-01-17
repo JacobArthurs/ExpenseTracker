@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Entity
 @Table(name = "expense_tracker_user")
@@ -46,6 +47,15 @@ public class User implements UserDetails {
 
     @Column(name = "last_updated_date", nullable = false)
     private Timestamp lastUpdatedDate;
+
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.REMOVE)
+    private List<Category> categories;
+
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.REMOVE)
+    private List<ExpectedCategoryDistribution> expectedCategoryDistributions;
+
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.REMOVE)
+    private List<Expense> expenses;
 
     public User(String username, String password, String name, String email, UserRole role, Timestamp createdDate, Timestamp lastUpdatedDate) {
         this.username = username;

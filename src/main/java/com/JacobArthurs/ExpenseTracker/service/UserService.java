@@ -44,10 +44,6 @@ public class UserService implements UserDetailsService {
 
     public User registerUser(UserRegisterRequestDto request) {
         var username = request.getUserName().toLowerCase();
-        var currentUser = currentUserProvider.getCurrentUser();
-        if (!currentUser.getUsername().equals(username) && currentUser.getRole() != UserRole.ADMIN){
-            throw new RuntimeException("You are not authorized to update a user that is not yourself.");
-        }
 
         var isPresent = userRepository.findByUsername(username).isPresent();
         if (isPresent)
@@ -93,12 +89,18 @@ public class UserService implements UserDetailsService {
 
     public User updateUser(Long id, UserRegisterRequestDto request) {
         var user = userRepository.findById(id);
+        var username = request.getUserName().toLowerCase();
+        var currentUser = currentUserProvider.getCurrentUser();
+
+        if (!currentUser.getUsername().equals(username) && currentUser.getRole() != UserRole.ADMIN){
+            throw new RuntimeException("You are not authorized to update a user that is not yourself.");
+        }
 
         if (user.isPresent()) {
             var now = new Timestamp(System.currentTimeMillis());
 
             var updateUser = new User(
-                    request.getUserName().toLowerCase(),
+                    username,
                     request.getPassword(),
                     request.getName(),
                     request.getEmail(),
