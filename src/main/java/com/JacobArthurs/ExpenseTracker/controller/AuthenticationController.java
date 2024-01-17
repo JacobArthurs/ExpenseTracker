@@ -1,6 +1,6 @@
 package com.JacobArthurs.ExpenseTracker.controller;
 
-import com.JacobArthurs.ExpenseTracker.dto.UserDto;
+import com.JacobArthurs.ExpenseTracker.dto.OperationResult;
 import com.JacobArthurs.ExpenseTracker.dto.UserLoginRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.UserRegisterRequestDto;
 import com.JacobArthurs.ExpenseTracker.service.UserService;
@@ -39,9 +39,7 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user", description = "Registers a new user")
-    public ResponseEntity<UserDto> register(@RequestBody @Valid UserRegisterRequestDto request) {
-        var user = userService.registerUser(request);
-
-        return ResponseEntity.ok(new UserDto(user));
+    public ResponseEntity<OperationResult> register(@RequestBody @Valid UserRegisterRequestDto request) {
+        return ResponseEntity.ok(userService.registerUser(request));
     }
 }

@@ -2,6 +2,7 @@ package com.JacobArthurs.ExpenseTracker.service;
 
 import com.JacobArthurs.ExpenseTracker.dto.CategoryRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.CategorySearchRequestDto;
+import com.JacobArthurs.ExpenseTracker.dto.OperationResult;
 import com.JacobArthurs.ExpenseTracker.dto.PaginatedResponse;
 import com.JacobArthurs.ExpenseTracker.enumerator.UserRole;
 import com.JacobArthurs.ExpenseTracker.model.Category;
@@ -39,42 +40,48 @@ public class CategoryService {
                 .orElseThrow(() -> new RuntimeException("Category not found with ID: " + id));;
 
         if (doesCurrentUserNotOwnCategory(category))
-            throw new RuntimeException("You are not authorized to get a category that is not yours.");
+            throw new RuntimeException("You are not authorized to get a category that is not yours");
         else
             return category;
     }
 
-    public Category createCategory(CategoryRequestDto request) {
+    public OperationResult createCategory(CategoryRequestDto request) {
         var category = CategoryUtil.convertRequestToObject(request);
 
         category.setCreatedBy(currentUserProvider.getCurrentUser());
         category.setCreatedDate(new Timestamp(System.currentTimeMillis()));
 
-        return categoryRepository.save(category);
+        categoryRepository.save(category);
+
+        return new OperationResult(true, "Category created successfully");
     }
 
-    public Category updateCategory(Long id, CategoryRequestDto request) {
-        var category = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found with ID: " + id));;
+    public OperationResult updateCategory(Long id, CategoryRequestDto request) {
+        var category = categoryRepository.findById(id).orElse(null);
 
+        if (category == null)
+            return new OperationResult(false, "Category not found with ID: " + id);
         if (doesCurrentUserNotOwnCategory(category))
-            throw new RuntimeException("You are not authorized to update a category that is not yours.");
+            return new OperationResult(false, "You are not authorized to update a category that is not yours");
 
         category.setTitle(request.getTitle());
         category.setDescription(request.getDescription());
         category.setLastUpdatedDate(new Timestamp(System.currentTimeMillis()));
 
-        return categoryRepository.save(category);
+        categoryRepository.save(category);
+
+        return new OperationResult(true, "Category updated successfully");
     }
 
-    public boolean deleteCategory(Long id) {
-        var category = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found with ID: " + id));
+    public OperationResult deleteCategory(Long id) {
+        var category = categoryRepository.findById(id).orElse(null);
+        if (category == null)
+            return new OperationResult(false, "Category not found with ID: " + id);
         if (doesCurrentUserNotOwnCategory(category))
-            throw new RuntimeException("You are not authorized to delete a category that is not yours.");
+            return new OperationResult(false, "You are not authorized to delete a category that is not yours");
 
         categoryRepository.deleteById(id);
-        return true;
+        return new OperationResult(true, "Category deleted successfully");
     }
 
     public PaginatedResponse<Category> searchCategories(CategorySearchRequestDto request) {

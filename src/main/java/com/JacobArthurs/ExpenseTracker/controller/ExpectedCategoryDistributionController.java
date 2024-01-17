@@ -49,30 +49,19 @@ public class ExpectedCategoryDistributionController {
 
     @PostMapping
     @Operation(summary = "Create an expected category distribution", description = "Creates an expected category distribution as per the request body")
-    public ResponseEntity<ExpectedCategoryDistributionDto> createExpectedCategoryDistribution(@RequestBody @Valid ExpectedCategoryDistributionRequestDto request) {
-        var category = expectedCategoryDistributionService.createExpectedCategoryDistribution(request);
-        return ResponseEntity.ok(new ExpectedCategoryDistributionDto(category));
+    public ResponseEntity<OperationResult> createExpectedCategoryDistribution(@RequestBody @Valid ExpectedCategoryDistributionRequestDto request) {
+        return ResponseEntity.ok(expectedCategoryDistributionService.createExpectedCategoryDistribution(request));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update an expected category distribution", description = "Updates an expected category distribution as per the id and request body")
-    public ResponseEntity<ExpectedCategoryDistributionDto> updateExpectedCategoryDistribution(@PathVariable Long id, @RequestBody @Valid ExpectedCategoryDistributionRequestDto request) {
-        var category = expectedCategoryDistributionService.updateExpectedCategoryDistribution(id, request);
-        if (category != null) {
-            return ResponseEntity.ok(new ExpectedCategoryDistributionDto(category));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<OperationResult> updateExpectedCategoryDistribution(@PathVariable Long id, @RequestBody @Valid ExpectedCategoryDistributionRequestDto request) {
+        return ResponseEntity.ok(expectedCategoryDistributionService.updateExpectedCategoryDistribution(id, request));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete an expected category distribution", description = "Deletes an expected category distribution as per the id")
-    public ResponseEntity<Void> deleteExpectedCategoryDistribution(@PathVariable Long id) {
-        var deleted = expectedCategoryDistributionService.deleteExpectedCategoryDistribution(id);
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<OperationResult> deleteExpectedCategoryDistribution(@PathVariable Long id) {
+        return ResponseEntity.ok(expectedCategoryDistributionService.deleteExpectedCategoryDistribution(id));
     }
 }

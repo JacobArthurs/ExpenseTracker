@@ -1,9 +1,6 @@
 package com.JacobArthurs.ExpenseTracker.service;
 
-import com.JacobArthurs.ExpenseTracker.dto.DistributionDto;
-import com.JacobArthurs.ExpenseTracker.dto.ExpectedCategoryDistributionRequestDto;
-import com.JacobArthurs.ExpenseTracker.dto.ExpectedCategoryDistributionSearchRequestDto;
-import com.JacobArthurs.ExpenseTracker.dto.PaginatedResponse;
+import com.JacobArthurs.ExpenseTracker.dto.*;
 import com.JacobArthurs.ExpenseTracker.enumerator.UserRole;
 import com.JacobArthurs.ExpenseTracker.model.ExpectedCategoryDistribution;
 import com.JacobArthurs.ExpenseTracker.repository.ExpectedCategoryDistributionRepository;
@@ -64,37 +61,40 @@ public class ExpectedCategoryDistributionService {
             return expectedCategoryDistribution;
     }
 
-    public ExpectedCategoryDistribution createExpectedCategoryDistribution(ExpectedCategoryDistributionRequestDto request) {
+    public OperationResult createExpectedCategoryDistribution(ExpectedCategoryDistributionRequestDto request) {
         var expectedCategoryDistribution = ExpectedCategoryDistributionUtil.convertRequestToObject(request, categoryService);
         expectedCategoryDistribution.setCreatedBy(currentUserProvider.getCurrentUser());
         expectedCategoryDistribution.setCreatedDate(new Timestamp(System.currentTimeMillis()));
 
-        return expectedCategoryDistributionRepository.save(expectedCategoryDistribution);
+        expectedCategoryDistributionRepository.save(expectedCategoryDistribution);
+        return new OperationResult(true, "Expected category distribution created successfully");
     }
 
-    public ExpectedCategoryDistribution updateExpectedCategoryDistribution(Long id, ExpectedCategoryDistributionRequestDto request) {
-        var expectedCategoryDistribution = expectedCategoryDistributionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Expected category distribution not found with ID: " + id));
+    public OperationResult updateExpectedCategoryDistribution(Long id, ExpectedCategoryDistributionRequestDto request) {
+        var expectedCategoryDistribution = expectedCategoryDistributionRepository.findById(id).orElse(null);
+
+        if (expectedCategoryDistribution == null)
+            return new OperationResult(false, "Expected category distribution not found with ID: " + id);
+        if (doesCurrentUserNotOwnExpectedCategoryDistribution(expectedCategoryDistribution))
+            return new OperationResult(false, "You are not authorized to update an expected category distribution that is not yours.");
 
         expectedCategoryDistribution.setDistribution(request.getDistribution());
         expectedCategoryDistribution.setLastUpdatedDate(new Timestamp(System.currentTimeMillis()));
 
-        if (doesCurrentUserNotOwnExpectedCategoryDistribution(expectedCategoryDistribution))
-            throw new RuntimeException("You are not authorized to get an expected category distribution that is not yours.");
-        else
-            return expectedCategoryDistributionRepository.save(expectedCategoryDistribution);
+        expectedCategoryDistributionRepository.save(expectedCategoryDistribution);
+        return new OperationResult(true, "Expected category distribution updated successfully");
     }
 
-    public boolean deleteExpectedCategoryDistribution(Long id) {
-        var expectedCategoryDistribution = expectedCategoryDistributionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Expected category distribution not found with ID: " + id));
+    public OperationResult deleteExpectedCategoryDistribution(Long id) {
+        var expectedCategoryDistribution = expectedCategoryDistributionRepository.findById(id).orElse(null);
 
+        if (expectedCategoryDistribution == null)
+            return new OperationResult(false, "Expected category distribution not found with ID: " + id);
         if (doesCurrentUserNotOwnExpectedCategoryDistribution(expectedCategoryDistribution))
-            throw new RuntimeException("You are not authorized to get an expected category distribution that is not yours.");
-        else {
-            expectedCategoryDistributionRepository.deleteById(id);
-            return true;
-        }
+            return new OperationResult(false, "You are not authorized to delete an expected category distribution that is not yours.");
+
+        expectedCategoryDistributionRepository.deleteById(id);
+        return new OperationResult(true, "Expected category distribution deleted successfully");
     }
 
     public PaginatedResponse<ExpectedCategoryDistribution> searchExpectedCategoryDistributions(ExpectedCategoryDistributionSearchRequestDto request) {

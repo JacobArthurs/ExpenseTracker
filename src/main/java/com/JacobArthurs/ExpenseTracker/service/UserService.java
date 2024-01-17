@@ -1,5 +1,6 @@
 package com.JacobArthurs.ExpenseTracker.service;
 
+import com.JacobArthurs.ExpenseTracker.dto.OperationResult;
 import com.JacobArthurs.ExpenseTracker.dto.UserLoginRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.UserRegisterRequestDto;
 import com.JacobArthurs.ExpenseTracker.enumerator.UserRole;
@@ -42,12 +43,12 @@ public class UserService implements UserDetailsService {
         return false;
     }
 
-    public User registerUser(UserRegisterRequestDto request) {
+    public OperationResult registerUser(UserRegisterRequestDto request) {
         var username = request.getUserName().toLowerCase();
 
         var isPresent = userRepository.findByUsername(username).isPresent();
         if (isPresent)
-            throw new RuntimeException("Username '" + username + "' is already taken.");
+            return new OperationResult(false, "Username '" + username + "' is already taken.");
 
         var now = new Timestamp(System.currentTimeMillis());
 
@@ -61,7 +62,9 @@ public class UserService implements UserDetailsService {
                 now
         );
 
-        return userRepository.save(user);
+        userRepository.save(user);
+
+        return new OperationResult(true, "User registered successfully");
     }
 
     public boolean deleteUser(Long id) {

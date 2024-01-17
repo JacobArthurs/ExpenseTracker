@@ -46,38 +46,43 @@ public class ExpenseService {
             return expense;
     }
 
-    public Expense createExpense(ExpenseRequestDto request) {
+    public OperationResult createExpense(ExpenseRequestDto request) {
         var expense = ExpenseUtil.convertRequestToObject(request, categoryService);
 
         expense.setCreatedBy(currentUserProvider.getCurrentUser());
         expense.setCreatedDate(new Timestamp(System.currentTimeMillis()));
 
-        return expenseRepository.save(expense);
+        expenseRepository.save(expense);
+        return new OperationResult(true, "Expense created successfully");
     }
 
-    public Expense updateExpense(Long id, ExpenseRequestDto request) {
-        var expense = expenseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Expense not found with ID: " + id));;
+    public OperationResult updateExpense(Long id, ExpenseRequestDto request) {
+        var expense = expenseRepository.findById(id).orElse(null);
 
+        if (expense == null)
+            return new OperationResult(false, "Expense not found with ID: " + id);
         if (doesCurrentUserNotOwnExpense(expense))
-            throw new RuntimeException("You are not authorized to update an expense that is not yours.");
+            return new OperationResult(false, "You are not authorized to update an expense that is not yours.");
 
         expense.setCategory(categoryService.getCategoryById(request.getCategoryId()));
         expense.setTitle(request.getTitle());
         expense.setDescription(request.getDescription());
         expense.setLastUpdatedDate(new Timestamp(System.currentTimeMillis()));
 
-        return expenseRepository.save(expense);
+        expenseRepository.save(expense);
+        return new OperationResult(true, "Expense updated successfully");
     }
 
-    public boolean deleteExpense(Long id) {
-        var expense = expenseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Expense not found with ID: " + id));
+    public OperationResult deleteExpense(Long id) {
+        var expense = expenseRepository.findById(id).orElse(null);
+
+        if (expense == null)
+            return new OperationResult(false, "Expense not found with ID: " + id);
         if (doesCurrentUserNotOwnExpense(expense))
-            throw new RuntimeException("You are not authorized to delete an expense that is not yours.");
+            return new OperationResult(false, "You are not authorized to delete an expense that is not yours.");
 
         expenseRepository.deleteById(id);
-        return true;
+        return new OperationResult(true, "Expense deleted successfully");
     }
 
     public PaginatedResponse<Expense> searchExpenses(ExpenseSearchRequestDto request) {

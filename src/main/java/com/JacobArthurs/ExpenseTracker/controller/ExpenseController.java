@@ -10,9 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @RestController
 @RequestMapping("/expense")
 @Tag(name="Expense controller", description = "CRUD endpoints for expenses.")
@@ -51,30 +48,19 @@ public class ExpenseController {
 
     @PostMapping
     @Operation(summary = "Create an expense", description = "Creates an expense as per the request body")
-    public ResponseEntity<ExpenseDto> createExpense(@RequestBody @Valid ExpenseRequestDto request) {
-        var expense = expenseService.createExpense(request);
-        return ResponseEntity.ok(new ExpenseDto(expense));
+    public ResponseEntity<OperationResult> createExpense(@RequestBody @Valid ExpenseRequestDto request) {
+        return ResponseEntity.ok(expenseService.createExpense(request));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update an expense", description = "Updates an expense as per the id and request body")
-    public ResponseEntity<ExpenseDto> updateExpense(@PathVariable Long id, @RequestBody @Valid ExpenseRequestDto request) {
-        var expense = expenseService.updateExpense(id, request);
-        if (expense != null) {
-            return ResponseEntity.ok(new ExpenseDto(expense));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<OperationResult> updateExpense(@PathVariable Long id, @RequestBody @Valid ExpenseRequestDto request) {
+        return ResponseEntity.ok(expenseService.updateExpense(id, request));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete an expense", description = "Deletes an expense as per the id")
-    public ResponseEntity<Void> deleteExpense(@PathVariable Long id) {
-        var deleted = expenseService.deleteExpense(id);
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<OperationResult> deleteExpense(@PathVariable Long id) {
+        return ResponseEntity.ok(expenseService.deleteExpense(id));
     }
 }
