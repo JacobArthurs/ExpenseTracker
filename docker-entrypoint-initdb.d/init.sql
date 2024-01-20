@@ -94,7 +94,7 @@ DECLARE
     min_distribution INT;
     max_distribution INT;
     random_percentage INT;
-    total_expenses INT := 1000;
+    total_expenses INT := 500;
     num_expenses INT;
     i INT;
     expense_date TIMESTAMP;
@@ -134,11 +134,11 @@ BEGIN
 
             -- Insert dummy expense data into the expense table
             FOR i IN 1..num_expenses LOOP
-                -- Generate a random date between current date and 6 months ago
-                expense_date := CURRENT_DATE - (floor(random() * 180) || ' days')::INTERVAL;
+                -- Generate a random date between current date and 12 months ago
+                expense_date := CURRENT_DATE - (floor(random() * 365) || ' days')::INTERVAL;
 
-                -- Generate a random expense amount between 1 and 1000
-                expense_amount := CAST(random() * 999 + 1 AS numeric(12, 2));
+                -- Generate a random expense amount between 1 and 500
+                expense_amount := CAST(random() * 499 + 1 AS numeric(12, 2));
 
                 -- Insert dummy expense data
                 INSERT INTO expense (user_id, category_id, title, description, amount, created_date, last_updated_date)
