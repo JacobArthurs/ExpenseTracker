@@ -2,6 +2,8 @@ package com.JacobArthurs.ExpenseTracker.dto;
 
 import com.JacobArthurs.ExpenseTracker.model.Expense;
 import lombok.Getter;
+
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Getter
@@ -10,6 +12,7 @@ public class ExpenseDto {
     private Long categoryId;
     private String title;
     private String description;
+    private BigDecimal amount;
     private Timestamp createdDate;
     private Timestamp lastUpdatedDate;
 
@@ -18,6 +21,7 @@ public class ExpenseDto {
         this.categoryId = expense.getCategory().getId();
         this.title = expense.getTitle();
         this.description = expense.getDescription();
+        this.amount = expense.getAmount();
         this.createdDate = expense.getCreatedDate();
         this.lastUpdatedDate = expense.getLastUpdatedDate();
     }

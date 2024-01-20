@@ -67,6 +67,7 @@ public class ExpenseService {
         expense.setCategory(categoryService.getCategoryById(request.getCategoryId()));
         expense.setTitle(request.getTitle());
         expense.setDescription(request.getDescription());
+        expense.setAmount(request.getAmount());
         expense.setLastUpdatedDate(new Timestamp(System.currentTimeMillis()));
 
         expenseRepository.save(expense);
@@ -90,11 +91,6 @@ public class ExpenseService {
 
         spec = spec.and((root, query, criteriaBuilder) ->
                 criteriaBuilder.equal(root.get("createdBy"), currentUserProvider.getCurrentUser()));
-
-        if (request.getId() != null) {
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("id"), request.getId()));
-        }
 
         if (request.getCategoryId() != null) {
             spec = spec.and((root, query, criteriaBuilder) ->
@@ -128,6 +124,16 @@ public class ExpenseService {
         if (request.getEndDate() != null) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.lessThanOrEqualTo(root.get("createdDate"), request.getEndDate()));
+        }
+
+        if (request.getMinAmount() != null) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.greaterThanOrEqualTo(root.get("amount"), request.getMinAmount()));
+        }
+
+        if (request.getMaxAmount() != null) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.lessThanOrEqualTo(root.get("amount"), request.getMaxAmount()));
         }
 
         var sort = Sort.by(

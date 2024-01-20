@@ -23,6 +23,7 @@ public class ExpenseUtil {
         var expense = new Expense();
         expense.setTitle(request.getTitle());
         expense.setDescription(request.getDescription());
+        expense.setAmount(request.getAmount());
         expense.setLastUpdatedDate(new Timestamp(System.currentTimeMillis()));
 
         var category = categoryService.getCategoryById(request.getCategoryId());

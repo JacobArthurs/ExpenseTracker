@@ -3,6 +3,8 @@ package com.JacobArthurs.ExpenseTracker.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Entity
@@ -24,6 +26,9 @@ public class Expense {
 
     @Column(name = "description", length = 200)
     private String description;
+
+    @Column(name = "amount", nullable = false)
+    private BigDecimal amount;
 
     @Column(name = "created_date", nullable = false)
     private Timestamp createdDate;

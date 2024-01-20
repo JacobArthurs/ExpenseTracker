@@ -3,12 +3,11 @@ package com.JacobArthurs.ExpenseTracker.dto;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Getter
 public class ExpenseSearchRequestDto extends PaginatedRequest {
-    private Long id;
-
     private Long categoryId;
 
     @Size(max = 50)
@@ -23,4 +22,8 @@ public class ExpenseSearchRequestDto extends PaginatedRequest {
     private Timestamp startDate;
 
     private Timestamp endDate;
+
+    private BigDecimal minAmount;
+
+    private BigDecimal maxAmount;
 }

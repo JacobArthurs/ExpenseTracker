@@ -44,6 +44,7 @@ CREATE TABLE expense (
 	category_id INT NOT NULL,
 	title VARCHAR ( 50 ) NOT NULL,
 	description VARCHAR ( 200 ),
+	amount decimal(12,2),
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     last_updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	FOREIGN KEY (category_id)
@@ -99,6 +100,7 @@ DECLARE
     expense_date TIMESTAMP;
     title_prefix VARCHAR(255);
     description_prefix VARCHAR(255);
+    expense_amount DECIMAL(12,2);
 BEGIN
     BEGIN
         FOR distribution_record IN (SELECT * FROM expected_category_distribution) LOOP
@@ -108,7 +110,7 @@ BEGIN
             max_distribution := distribution_record.distribution + 5;
 
             -- Generate a random percentage within the specified distribution
-            random_percentage := floor(random() * (max_distribution - min_distribution + 1) + min_distribution);
+            random_percentage := round(random() * (max_distribution - min_distribution + 1) + min_distribution);
 
             -- Calculate the number of expenses based on the percentage
             num_expenses := CEIL((random_percentage / 100.0) * total_expenses);
@@ -135,9 +137,12 @@ BEGIN
                 -- Generate a random date between current date and 6 months ago
                 expense_date := CURRENT_DATE - (floor(random() * 180) || ' days')::INTERVAL;
 
+                -- Generate a random expense amount between 1 and 1000
+                expense_amount := CAST(random() * 999 + 1 AS numeric(12, 2));
+
                 -- Insert dummy expense data
-                INSERT INTO expense (user_id, category_id, title, description, created_date, last_updated_date)
-                VALUES (user_id, category_id, title_prefix || ' ' || i, description_prefix || ' ' || i, expense_date, expense_date);
+                INSERT INTO expense (user_id, category_id, title, description, amount, created_date, last_updated_date)
+                VALUES (user_id, category_id, title_prefix || ' ' || i, description_prefix || ' ' || i, expense_amount, expense_date, expense_date);
             END LOOP;
         END LOOP;
     EXCEPTION
