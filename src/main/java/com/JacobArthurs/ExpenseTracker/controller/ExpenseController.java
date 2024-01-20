@@ -33,6 +33,12 @@ public class ExpenseController {
         }
     }
 
+    @GetMapping("/monthly-metric")
+    @Operation(summary = "Get monthly expense metric data", description = "Returns an objecting containing monthly expense metrics")
+    public ResponseEntity<MonthlyExpenseMetricDto> getMonthlyExpenseMetric() {
+        return ResponseEntity.ok(expenseService.getMonthlyExpenseMetric());
+    }
+
     @PostMapping("/current-distribution")
     @Operation(summary = "Get the current distribution", description = "Returns current distributions based on the provided start date")
     public ResponseEntity<DistributionDto> getCurrentDistribution(@RequestBody @Valid CurrentDistributionRequestDto request) {

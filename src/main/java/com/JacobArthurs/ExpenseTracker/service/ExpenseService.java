@@ -13,11 +13,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.List;
-import java.util.Objects;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.TreeMap;
 
 @Service
 public class ExpenseService {
@@ -183,6 +184,46 @@ public class ExpenseService {
                 .toList();
 
         return new DistributionDto(categories, distributions);
+    }
+
+    public MonthlyExpenseMetricDto getMonthlyExpenseMetric() {
+        var startDate = new Timestamp(System.currentTimeMillis());
+        var endDate = Timestamp.valueOf(startDate.toLocalDateTime().minusMonths(11));
+
+        Specification<Expense> spec = Specification.where(null);
+        spec = spec.and((root, query, criteriaBuilder) ->
+                criteriaBuilder.between(root.get("createdDate"), endDate, startDate));
+
+        spec = spec.and((root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("createdBy"), currentUserProvider.getCurrentUser()));
+
+        var sort = Sort.by(Sort.Order.asc("createdDate"));
+
+        var expenses = expenseRepository.findAll(spec, sort);
+
+        System.out.println(expenses);
+
+        Map<String, BigDecimal> monthlyExpenseMap = expenses.stream()
+                .collect(Collectors.groupingBy(
+                        expense -> expense.getCreatedDate().toLocalDateTime().format(DateTimeFormatter.ofPattern("MMMM yyyy")),
+                        Collectors.mapping(Expense::getAmount, Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))
+                ));
+
+        List<String> months = new ArrayList<>(12);
+        List<BigDecimal> amounts = new ArrayList<>(12);
+
+        System.out.println(monthlyExpenseMap);
+
+        LocalDate currentDate = endDate.toLocalDateTime().toLocalDate();
+        for (int i = 0; i < 12; i++) {
+            String monthYear = currentDate.format(DateTimeFormatter.ofPattern("MMMM yyyy"));
+            months.add(monthYear);
+            amounts.add(monthlyExpenseMap.getOrDefault(monthYear, BigDecimal.ZERO));
+
+            currentDate = currentDate.plusMonths(1);
+        }
+
+        return new MonthlyExpenseMetricDto(months, amounts);
     }
 
     private boolean doesCurrentUserNotOwnExpense(Expense expense) {
