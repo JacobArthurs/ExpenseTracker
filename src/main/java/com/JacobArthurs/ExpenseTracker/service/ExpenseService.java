@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -201,8 +202,6 @@ public class ExpenseService {
 
         var expenses = expenseRepository.findAll(spec, sort);
 
-        System.out.println(expenses);
-
         Map<String, BigDecimal> monthlyExpenseMap = expenses.stream()
                 .collect(Collectors.groupingBy(
                         expense -> expense.getCreatedDate().toLocalDateTime().format(DateTimeFormatter.ofPattern("MMMM yyyy")),
@@ -211,8 +210,6 @@ public class ExpenseService {
 
         List<String> months = new ArrayList<>(12);
         List<BigDecimal> amounts = new ArrayList<>(12);
-
-        System.out.println(monthlyExpenseMap);
 
         LocalDate currentDate = endDate.toLocalDateTime().toLocalDate();
         for (int i = 0; i < 12; i++) {
@@ -224,6 +221,30 @@ public class ExpenseService {
         }
 
         return new MonthlyExpenseMetricDto(months, amounts);
+    }
+
+    public BigDecimal getTotalExpenseAmount () {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        var startDate = new Timestamp(calendar.getTimeInMillis());
+        var endDate = new Timestamp(System.currentTimeMillis());
+
+        Specification<Expense> spec = Specification.where(null);
+        spec = spec.and((root, query, criteriaBuilder) ->
+                criteriaBuilder.between(root.get("createdDate"), startDate, endDate));
+
+        spec = spec.and((root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("createdBy"), currentUserProvider.getCurrentUser()));
+
+        var expenses = expenseRepository.findAll(spec, Sort.unsorted());
+
+        return expenses.stream()
+                .map(Expense::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private boolean doesCurrentUserNotOwnExpense(Expense expense) {

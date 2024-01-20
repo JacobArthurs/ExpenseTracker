@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping("/expense")
 @Tag(name="Expense controller", description = "CRUD endpoints for expenses.")
@@ -37,6 +39,12 @@ public class ExpenseController {
     @Operation(summary = "Get monthly expense metric data", description = "Returns an objecting containing monthly expense metrics")
     public ResponseEntity<MonthlyExpenseMetricDto> getMonthlyExpenseMetric() {
         return ResponseEntity.ok(expenseService.getMonthlyExpenseMetric());
+    }
+
+    @GetMapping("/total-amount")
+    @Operation(summary = "Get total amount of expenses", description = "Returns total amount of expenses in the current month")
+    public ResponseEntity<BigDecimal> getTotalAmount() {
+        return ResponseEntity.ok(expenseService.getTotalExpenseAmount());
     }
 
     @PostMapping("/current-distribution")
