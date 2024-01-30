@@ -2,10 +2,12 @@ package com.JacobArthurs.ExpenseTracker.service;
 
 import com.JacobArthurs.ExpenseTracker.dto.*;
 import com.JacobArthurs.ExpenseTracker.enumerator.UserRole;
+import com.JacobArthurs.ExpenseTracker.model.Category;
 import com.JacobArthurs.ExpenseTracker.model.Expense;
 import com.JacobArthurs.ExpenseTracker.repository.ExpenseRepository;
 import com.JacobArthurs.ExpenseTracker.util.ExpenseUtil;
 import com.JacobArthurs.ExpenseTracker.util.OffsetBasedPageRequest;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +19,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -188,12 +191,14 @@ public class ExpenseService {
     }
 
     public MonthlyExpenseMetricDto getMonthlyExpenseMetric() {
-        var startDate = new Timestamp(System.currentTimeMillis());
-        var endDate = Timestamp.valueOf(startDate.toLocalDateTime().minusMonths(11));
+        var now = LocalDate.now();
+
+        var startDate = Timestamp.valueOf(now.minusMonths(11).withDayOfMonth(1).atStartOfDay());
+        var endDate = Timestamp.valueOf(now.withDayOfMonth(now.lengthOfMonth()).atTime(23, 59, 59));
 
         Specification<Expense> spec = Specification.where(null);
         spec = spec.and((root, query, criteriaBuilder) ->
-                criteriaBuilder.between(root.get("createdDate"), endDate, startDate));
+                criteriaBuilder.between(root.get("createdDate"), startDate, endDate));
 
         spec = spec.and((root, query, criteriaBuilder) ->
                 criteriaBuilder.equal(root.get("createdBy"), currentUserProvider.getCurrentUser()));
@@ -211,7 +216,7 @@ public class ExpenseService {
         List<String> months = new ArrayList<>(12);
         List<BigDecimal> amounts = new ArrayList<>(12);
 
-        LocalDate currentDate = endDate.toLocalDateTime().toLocalDate();
+        var currentDate = startDate.toLocalDateTime().toLocalDate();
         for (int i = 0; i < 12; i++) {
             String monthYear = currentDate.format(DateTimeFormatter.ofPattern("MMMM yyyy"));
             months.add(monthYear);
@@ -223,19 +228,15 @@ public class ExpenseService {
         return new MonthlyExpenseMetricDto(months, amounts);
     }
 
-    public BigDecimal getTotalExpenseAmount () {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.DAY_OF_MONTH, 1);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        var startDate = new Timestamp(calendar.getTimeInMillis());
-        var endDate = new Timestamp(System.currentTimeMillis());
+    public BigDecimal getTotalExpenseAmount (TotalExpenseAmountRequestDto request) {
+        var providedMonth = request.getMonth().toLocalDateTime().toLocalDate();
+
+        var startOfMonth = Timestamp.valueOf(providedMonth.withDayOfMonth(1).atStartOfDay());
+        var endOfMonth = Timestamp.valueOf(providedMonth.withDayOfMonth(providedMonth.lengthOfMonth()).atTime(23, 59, 59));
 
         Specification<Expense> spec = Specification.where(null);
         spec = spec.and((root, query, criteriaBuilder) ->
-                criteriaBuilder.between(root.get("createdDate"), startDate, endDate));
+                criteriaBuilder.between(root.get("createdDate"), startOfMonth, endOfMonth));
 
         spec = spec.and((root, query, criteriaBuilder) ->
                 criteriaBuilder.equal(root.get("createdBy"), currentUserProvider.getCurrentUser()));
@@ -245,6 +246,29 @@ public class ExpenseService {
         return expenses.stream()
                 .map(Expense::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public OperationResult reassignExpensesToNewCategory(ReassignExpenseCategoryRequestDto request) {
+        Specification<Expense> spec = Specification.where(null);
+
+        spec = spec.and((root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("createdBy"), currentUserProvider.getCurrentUser()));
+
+        spec = spec.and((root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("category").get("id"), request.getOldCategoryId()));
+
+        var expenses = expenseRepository.findAll(spec, Sort.unsorted());
+
+        if (expenses.isEmpty()) {
+            return new OperationResult(false, "No expenses in selected category.");
+        }
+
+        for(Expense expense : expenses) {
+            expense.setCategory(categoryService.getCategoryById(request.getNewCategoryId()));
+            expenseRepository.save(expense);
+        }
+
+        return new OperationResult(true, expenses.size() + " expenses successfully updated.");
     }
 
     private boolean doesCurrentUserNotOwnExpense(Expense expense) {

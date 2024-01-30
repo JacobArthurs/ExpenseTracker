@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 @Getter
 public class ExpenseDto {
     private Long id;
-    private Long categoryId;
+    private String category;
     private String title;
     private String description;
     private BigDecimal amount;
@@ -18,7 +18,7 @@ public class ExpenseDto {
 
     public ExpenseDto(Expense expense){
         this.id = expense.getId();
-        this.categoryId = expense.getCategory().getId();
+        this.category = expense.getCategory().getTitle();
         this.title = expense.getTitle();
         this.description = expense.getDescription();
         this.amount = expense.getAmount();

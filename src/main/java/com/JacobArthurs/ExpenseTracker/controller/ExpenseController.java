@@ -41,10 +41,10 @@ public class ExpenseController {
         return ResponseEntity.ok(expenseService.getMonthlyExpenseMetric());
     }
 
-    @GetMapping("/total-amount")
+    @PostMapping("/total-amount")
     @Operation(summary = "Get total amount of expenses", description = "Returns total amount of expenses in the current month")
-    public ResponseEntity<BigDecimal> getTotalAmount() {
-        return ResponseEntity.ok(expenseService.getTotalExpenseAmount());
+    public ResponseEntity<BigDecimal> getTotalAmount(@RequestBody @Valid TotalExpenseAmountRequestDto request) {
+        return ResponseEntity.ok(expenseService.getTotalExpenseAmount(request));
     }
 
     @PostMapping("/current-distribution")
@@ -70,6 +70,11 @@ public class ExpenseController {
     @Operation(summary = "Update an expense", description = "Updates an expense as per the id and request body")
     public ResponseEntity<OperationResult> updateExpense(@PathVariable Long id, @RequestBody @Valid ExpenseRequestDto request) {
         return ResponseEntity.ok(expenseService.updateExpense(id, request));
+    }
+    @PutMapping("/category-reassign")
+    @Operation(summary = "Move Expenses to New Category", description = "Updates expenses categories from one category to another category.")
+    public ResponseEntity<OperationResult> reassignExpensesToNewCategory(@RequestBody @Valid ReassignExpenseCategoryRequestDto request) {
+        return ResponseEntity.ok(expenseService.reassignExpensesToNewCategory(request));
     }
 
     @DeleteMapping("/{id}")
