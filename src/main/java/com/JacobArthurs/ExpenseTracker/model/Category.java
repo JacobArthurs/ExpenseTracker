@@ -2,6 +2,7 @@ package com.JacobArthurs.ExpenseTracker.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
@@ -11,6 +12,7 @@ import java.util.List;
 @Table(name = "category")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,4 +40,12 @@ public class Category {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
     private User createdBy;
+
+    public Category(String title, String description, Timestamp createdDate, Timestamp lastUpdatedDate, User createdBy) {
+        this.title = title;
+        this.description = description;
+        this.createdDate = createdDate;
+        this.lastUpdatedDate = lastUpdatedDate;
+        this.createdBy = createdBy;
+    }
 }

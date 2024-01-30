@@ -2,7 +2,9 @@ package com.JacobArthurs.ExpenseTracker.service;
 
 import com.JacobArthurs.ExpenseTracker.dto.*;
 import com.JacobArthurs.ExpenseTracker.enumerator.UserRole;
+import com.JacobArthurs.ExpenseTracker.model.Category;
 import com.JacobArthurs.ExpenseTracker.model.ExpectedCategoryDistribution;
+import com.JacobArthurs.ExpenseTracker.model.User;
 import com.JacobArthurs.ExpenseTracker.repository.ExpectedCategoryDistributionRepository;
 import com.JacobArthurs.ExpenseTracker.util.ExpectedCategoryDistributionUtil;
 import com.JacobArthurs.ExpenseTracker.util.OffsetBasedPageRequest;
@@ -14,6 +16,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -133,6 +136,25 @@ public class ExpectedCategoryDistributionService {
         Page<ExpectedCategoryDistribution> categoryPage = expectedCategoryDistributionRepository.findAll(spec, pageable);
 
         return new PaginatedResponse<>(request.getLimit(), request.getOffset(), categoryPage.getTotalElements(), categoryPage.getContent());
+    }
+
+    public void createSeedData(List<Category> categories, User user) {
+        var currentTime = new Timestamp(System.currentTimeMillis());
+
+        var expectedCategoryDistributions = Arrays.asList(
+                new ExpectedCategoryDistribution(categories.get(0), 25, currentTime, currentTime, user),  // Housing
+                new ExpectedCategoryDistribution(categories.get(1), 15, currentTime, currentTime, user),  // Transportation
+                new ExpectedCategoryDistribution(categories.get(2), 15, currentTime, currentTime, user),  // Food
+                new ExpectedCategoryDistribution(categories.get(3), 10, currentTime, currentTime, user),  // Utilities
+                new ExpectedCategoryDistribution(categories.get(4), 10, currentTime, currentTime, user),  // Insurance
+                new ExpectedCategoryDistribution(categories.get(5), 5, currentTime, currentTime, user),   // Medical & Healthcare
+                new ExpectedCategoryDistribution(categories.get(6), 5, currentTime, currentTime, user),   // Saving, Investing, & Debt Payments
+                new ExpectedCategoryDistribution(categories.get(7), 5, currentTime, currentTime, user),   // Personal Spending
+                new ExpectedCategoryDistribution(categories.get(8), 5, currentTime, currentTime, user),   // Recreation & Entertainment
+                new ExpectedCategoryDistribution(categories.get(9), 5, currentTime, currentTime, user)    // Miscellaneous
+        );
+
+        expectedCategoryDistributionRepository.saveAll(expectedCategoryDistributions);
     }
 
     private boolean doesCurrentUserNotOwnExpectedCategoryDistribution(ExpectedCategoryDistribution expectedCategoryDistribution) {

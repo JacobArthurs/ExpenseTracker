@@ -4,9 +4,11 @@ import com.JacobArthurs.ExpenseTracker.dto.OperationResult;
 import com.JacobArthurs.ExpenseTracker.dto.UserLoginRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.UserRegisterRequestDto;
 import com.JacobArthurs.ExpenseTracker.enumerator.UserRole;
+import com.JacobArthurs.ExpenseTracker.event.UserCreatedEvent;
 import com.JacobArthurs.ExpenseTracker.model.User;
 import com.JacobArthurs.ExpenseTracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,11 +21,13 @@ import java.util.List;
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final CurrentUserProvider currentUserProvider;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    public UserService(UserRepository userRepository, CurrentUserProvider currentUserProvider) {
+    public UserService(UserRepository userRepository, CurrentUserProvider currentUserProvider, ApplicationEventPublisher eventPublisher) {
         this.userRepository = userRepository;
         this.currentUserProvider = currentUserProvider;
+        this.eventPublisher = eventPublisher;
     }
 
     public User getUserById(Long id) {
@@ -62,7 +66,8 @@ public class UserService implements UserDetailsService {
                 now
         );
 
-        userRepository.save(user);
+        var newUser = userRepository.save(user);
+        eventPublisher.publishEvent(new UserCreatedEvent(newUser));
 
         return new OperationResult(true, "User registered successfully");
     }

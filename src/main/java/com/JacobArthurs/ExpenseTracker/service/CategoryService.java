@@ -6,6 +6,7 @@ import com.JacobArthurs.ExpenseTracker.dto.OperationResult;
 import com.JacobArthurs.ExpenseTracker.dto.PaginatedResponse;
 import com.JacobArthurs.ExpenseTracker.enumerator.UserRole;
 import com.JacobArthurs.ExpenseTracker.model.Category;
+import com.JacobArthurs.ExpenseTracker.model.User;
 import com.JacobArthurs.ExpenseTracker.repository.CategoryRepository;
 import com.JacobArthurs.ExpenseTracker.util.CategoryUtil;
 import com.JacobArthurs.ExpenseTracker.util.OffsetBasedPageRequest;
@@ -17,6 +18,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -42,7 +44,7 @@ public class CategoryService {
 
     public Category getCategoryById(Long id) {
         var category = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found with ID: " + id));;
+                .orElseThrow(() -> new RuntimeException("Category not found with ID: " + id));
 
         if (doesCurrentUserNotOwnCategory(category))
             throw new RuntimeException("You are not authorized to get a category that is not yours");
@@ -145,6 +147,25 @@ public class CategoryService {
         Page<Category> categoryPage = categoryRepository.findAll(spec, pageable);
 
         return new PaginatedResponse<>(request.getLimit(), request.getOffset(), categoryPage.getTotalElements(), categoryPage.getContent());
+    }
+
+    public List<Category> createSeedData(User user) {
+        var currentTime = new Timestamp(System.currentTimeMillis());
+
+        var categories = Arrays.asList(
+                new Category("Housing", "Expenses related to housing.", currentTime, currentTime, user),
+                new Category("Transportation", "Costs associated with transportation.", currentTime, currentTime, user),
+                new Category("Food", "Expenditures on food.", currentTime, currentTime, user),
+                new Category("Utilities", "Costs for utilities.", currentTime, currentTime, user),
+                new Category("Insurance", "Expenditures for various types of insurance coverage.", currentTime, currentTime, user),
+                new Category("Medical & Healthcare", "Expenses related to medical and healthcare services.", currentTime, currentTime, user),
+                new Category("Saving, Investing, & Debt Payments", "Allocations for saving, investing, and debt payments.", currentTime, currentTime, user),
+                new Category("Personal Spending", "Personal discretionary spending.", currentTime, currentTime, user),
+                new Category("Recreation & Entertainment", "Costs associated with recreation and entertainment.", currentTime, currentTime, user),
+                new Category("Miscellaneous", "Miscellaneous expenses.", currentTime, currentTime, user)
+        );
+
+        return categoryRepository.saveAll(categories);
     }
 
     private boolean doesCurrentUserNotOwnCategory(Category category) {
