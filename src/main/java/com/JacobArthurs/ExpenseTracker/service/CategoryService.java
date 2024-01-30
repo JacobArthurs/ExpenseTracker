@@ -32,7 +32,12 @@ public class CategoryService {
     }
 
     public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+        var sort = Sort.by(
+                Sort.Order.desc("createdDate"),
+                Sort.Order.desc("lastUpdatedDate"),
+                Sort.Order.asc("id"));
+
+        return categoryRepository.findAllByCreatedBy(currentUserProvider.getCurrentUser(), sort);
     }
 
     public Category getCategoryById(Long id) {
@@ -46,6 +51,11 @@ public class CategoryService {
     }
 
     public OperationResult createCategory(CategoryRequestDto request) {
+        var categoryCount = categoryRepository.countByCreatedBy(currentUserProvider.getCurrentUser());
+        if (categoryCount >= 10) {
+            return new OperationResult(false, "Maximum 10 categories allowed. Please remove some before adding more.");
+        }
+
         var category = CategoryUtil.convertRequestToObject(request);
 
         category.setCreatedBy(currentUserProvider.getCurrentUser());

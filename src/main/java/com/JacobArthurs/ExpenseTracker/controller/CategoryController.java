@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/category")
 @Tag(name="Category controller", description = "CRUD endpoints for categories.")
@@ -21,6 +24,15 @@ public class CategoryController {
     @Autowired
     public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
+    }
+
+    @GetMapping
+    @Operation(summary = "Get all categories", description = "Returns all categories")
+    public ResponseEntity<List<CategoryDto>> getAllCategories() {
+        var categories = categoryService.getAllCategories();
+        return ResponseEntity.ok(categories.stream()
+                .map(CategoryDto::new)
+                .collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")
