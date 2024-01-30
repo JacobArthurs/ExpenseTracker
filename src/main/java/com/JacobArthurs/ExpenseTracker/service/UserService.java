@@ -7,7 +7,6 @@ import com.JacobArthurs.ExpenseTracker.enumerator.UserRole;
 import com.JacobArthurs.ExpenseTracker.event.UserCreatedEvent;
 import com.JacobArthurs.ExpenseTracker.model.User;
 import com.JacobArthurs.ExpenseTracker.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,7 +22,6 @@ public class UserService implements UserDetailsService {
     private final CurrentUserProvider currentUserProvider;
     private final ApplicationEventPublisher eventPublisher;
 
-    @Autowired
     public UserService(UserRepository userRepository, CurrentUserProvider currentUserProvider, ApplicationEventPublisher eventPublisher) {
         this.userRepository = userRepository;
         this.currentUserProvider = currentUserProvider;

@@ -8,7 +8,6 @@ import com.JacobArthurs.ExpenseTracker.model.User;
 import com.JacobArthurs.ExpenseTracker.repository.ExpectedCategoryDistributionRepository;
 import com.JacobArthurs.ExpenseTracker.util.ExpectedCategoryDistributionUtil;
 import com.JacobArthurs.ExpenseTracker.util.OffsetBasedPageRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -27,7 +26,6 @@ public class ExpectedCategoryDistributionService {
     private final CategoryService categoryService;
     public final CurrentUserProvider currentUserProvider;
 
-    @Autowired
     public ExpectedCategoryDistributionService(ExpectedCategoryDistributionRepository expectedCategoryDistribution, CategoryService categoryService, CurrentUserProvider currentUserProvider) {
         this.expectedCategoryDistributionRepository = expectedCategoryDistribution;
         this.categoryService = categoryService;

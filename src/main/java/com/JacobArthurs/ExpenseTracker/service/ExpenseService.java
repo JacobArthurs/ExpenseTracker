@@ -2,13 +2,10 @@ package com.JacobArthurs.ExpenseTracker.service;
 
 import com.JacobArthurs.ExpenseTracker.dto.*;
 import com.JacobArthurs.ExpenseTracker.enumerator.UserRole;
-import com.JacobArthurs.ExpenseTracker.model.Category;
 import com.JacobArthurs.ExpenseTracker.model.Expense;
 import com.JacobArthurs.ExpenseTracker.repository.ExpenseRepository;
 import com.JacobArthurs.ExpenseTracker.util.ExpenseUtil;
 import com.JacobArthurs.ExpenseTracker.util.OffsetBasedPageRequest;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -18,8 +15,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,7 +25,6 @@ public class ExpenseService {
     private final CategoryService categoryService;
     public final CurrentUserProvider currentUserProvider;
 
-    @Autowired
     public ExpenseService(ExpenseRepository expenseRepository, CategoryService categoryService, CurrentUserProvider currentUserProvider) {
         this.expenseRepository = expenseRepository;
         this.categoryService = categoryService;

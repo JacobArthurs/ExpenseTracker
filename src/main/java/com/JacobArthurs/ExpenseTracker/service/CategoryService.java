@@ -10,7 +10,6 @@ import com.JacobArthurs.ExpenseTracker.model.User;
 import com.JacobArthurs.ExpenseTracker.repository.CategoryRepository;
 import com.JacobArthurs.ExpenseTracker.util.CategoryUtil;
 import com.JacobArthurs.ExpenseTracker.util.OffsetBasedPageRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -27,7 +26,6 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     public final CurrentUserProvider currentUserProvider;
 
-    @Autowired
     public CategoryService(CategoryRepository categoryRepository, CurrentUserProvider currentUserProvider) {
         this.categoryRepository = categoryRepository;
         this.currentUserProvider = currentUserProvider;
