@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 public class ExpenseDto {
     private Long id;
     private String category;
+    private Long categoryId;
     private String title;
     private String description;
     private BigDecimal amount;
@@ -19,6 +20,7 @@ public class ExpenseDto {
     public ExpenseDto(Expense expense){
         this.id = expense.getId();
         this.category = expense.getCategory().getTitle();
+        this.categoryId = expense.getCategory().getId();
         this.title = expense.getTitle();
         this.description = expense.getDescription();
         this.amount = expense.getAmount();
