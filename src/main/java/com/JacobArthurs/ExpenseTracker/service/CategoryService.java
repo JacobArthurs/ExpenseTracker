@@ -5,11 +5,13 @@ import com.JacobArthurs.ExpenseTracker.dto.CategorySearchRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.OperationResult;
 import com.JacobArthurs.ExpenseTracker.dto.PaginatedResponse;
 import com.JacobArthurs.ExpenseTracker.enumerator.UserRole;
+import com.JacobArthurs.ExpenseTracker.event.CategoryCreatedEvent;
 import com.JacobArthurs.ExpenseTracker.model.Category;
 import com.JacobArthurs.ExpenseTracker.model.User;
 import com.JacobArthurs.ExpenseTracker.repository.CategoryRepository;
 import com.JacobArthurs.ExpenseTracker.util.CategoryUtil;
 import com.JacobArthurs.ExpenseTracker.util.OffsetBasedPageRequest;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,10 +27,12 @@ import java.util.Objects;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
     public final CurrentUserProvider currentUserProvider;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public CategoryService(CategoryRepository categoryRepository, CurrentUserProvider currentUserProvider) {
+    public CategoryService(CategoryRepository categoryRepository, CurrentUserProvider currentUserProvider, ApplicationEventPublisher eventPublisher) {
         this.categoryRepository = categoryRepository;
         this.currentUserProvider = currentUserProvider;
+        this.eventPublisher = eventPublisher;
     }
 
     public List<Category> getAllCategories() {
@@ -61,7 +65,9 @@ public class CategoryService {
         category.setCreatedBy(currentUserProvider.getCurrentUser());
         category.setCreatedDate(new Timestamp(System.currentTimeMillis()));
 
-        categoryRepository.save(category);
+        var newCategory = categoryRepository.save(category);
+
+        eventPublisher.publishEvent(new CategoryCreatedEvent(newCategory));
 
         return new OperationResult(true, "Category created successfully");
     }
