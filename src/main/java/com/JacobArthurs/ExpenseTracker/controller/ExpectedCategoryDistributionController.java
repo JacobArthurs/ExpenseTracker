@@ -10,6 +10,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/expected-category-distribution")
 @Tag(name="Expected category distribution controller", description = "CRUD endpoints for expected category distributions.")
@@ -34,7 +36,7 @@ public class ExpectedCategoryDistributionController {
 
     @GetMapping
     @Operation(summary = "Get all expected category distributions", description = "Returns all expected category distributions")
-    public ResponseEntity<DistributionDto> getAllExpectedCategoryDistributions() {
+    public ResponseEntity<List<DistributionDto>> getAllExpectedCategoryDistributions() {
         return ResponseEntity.ok(expectedCategoryDistributionService.getAllDistributions());
     }
 

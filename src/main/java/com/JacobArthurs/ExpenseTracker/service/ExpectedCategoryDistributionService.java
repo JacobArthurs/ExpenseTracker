@@ -36,20 +36,14 @@ public class ExpectedCategoryDistributionService {
         return expectedCategoryDistributionRepository.findAll();
     }
 
-    public DistributionDto getAllDistributions() {
+    public List<DistributionDto> getAllDistributions() {
         var sort = Sort.by(Sort.Order.asc("id"));
 
         var expectedCategoryDistributions = expectedCategoryDistributionRepository.findAllByCreatedBy(currentUserProvider.getCurrentUser(), sort);
 
-        var categories = expectedCategoryDistributions.stream()
-                .map(distribution -> distribution.getCategory().getTitle())
+        return expectedCategoryDistributions.stream()
+                .map(dist -> new DistributionDto(dist.getId(), dist.getCategory().getTitle(), dist.getDistribution()))
                 .collect(Collectors.toList());
-
-        var distributions = expectedCategoryDistributions.stream()
-                .map(ExpectedCategoryDistribution::getDistribution)
-                .collect(Collectors.toList());
-
-        return new DistributionDto(categories, distributions);
     }
 
     public ExpectedCategoryDistribution getExpectedCategoryDistributionById(Long id) {

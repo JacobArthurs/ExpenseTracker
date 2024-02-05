@@ -147,7 +147,7 @@ public class ExpenseService {
         return new PaginatedResponse<>(request.getLimit(), request.getOffset(), expensePage.getTotalElements(), expensePage.getContent());
     }
 
-    public DistributionDto getCurrentDistribution (CurrentDistributionRequestDto request) {
+    public List<DistributionDto> getCurrentDistribution (CurrentDistributionRequestDto request) {
         var startDate = Timestamp.valueOf(request.getCurrentDate().toLocalDateTime().minusMonths(1));
 
         Specification<Expense> spec = Specification.where(null);
@@ -160,28 +160,25 @@ public class ExpenseService {
         var sort = Sort.by(Sort.Order.asc("category.id"));
 
         var expenses = expenseRepository.findAll(spec, sort);
+        var categories = categoryService.getAllCategories();
 
         var groupedExpenses = expenses.stream()
-                .collect(Collectors.groupingBy(
-                        expense -> expense.getCategory().getTitle(),
-                        TreeMap::new,
-                        Collectors.toList()
+                .collect(Collectors.groupingBy(expense -> expense.getCategory().getId()));
+
+        var totalCount = expenses.size();
+
+        var groupedCategories = categories.stream()
+                .collect(Collectors.toMap(
+                        category -> category,
+                        category -> groupedExpenses.getOrDefault(category.getId(), List.of())
                 ));
 
-        var categories = expenses.stream()
-                .map(expense -> expense.getCategory().getTitle())
-                .distinct()
-                .toList();
-
-        var totalCount = groupedExpenses.values().stream()
-                .mapToLong(List::size)
-                .sum();
-
-        var distributions = categories.stream()
-                .map(key -> (int) ((double) groupedExpenses.get(key).size() / totalCount * 100))
-                .toList();
-
-        return new DistributionDto(categories, distributions);
+        return groupedCategories.keySet().stream()
+                .map(category -> new DistributionDto(
+                        category.getExpectedCategoryDistribution() != null ? category.getExpectedCategoryDistribution().getId() : 0L,
+                        category.getTitle(),
+                        (int) ((double) groupedCategories.get(category).size() / totalCount * 100))
+                ).toList();
     }
 
     public MonthlyExpenseMetricDto getMonthlyExpenseMetric() {

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/expense")
@@ -47,7 +48,7 @@ public class ExpenseController {
 
     @PostMapping("/current-distribution")
     @Operation(summary = "Get the current distribution", description = "Returns current distributions based on the provided start date")
-    public ResponseEntity<DistributionDto> getCurrentDistribution(@RequestBody @Valid CurrentDistributionRequestDto request) {
+    public ResponseEntity<List<DistributionDto>> getCurrentDistribution(@RequestBody @Valid CurrentDistributionRequestDto request) {
         return ResponseEntity.ok(expenseService.getCurrentDistribution(request));
     }
 

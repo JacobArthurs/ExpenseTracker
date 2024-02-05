@@ -2,9 +2,11 @@ package com.JacobArthurs.ExpenseTracker.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class ExpectedCategoryDistributionRequestDto {
     @NotNull
     private Long categoryId;
