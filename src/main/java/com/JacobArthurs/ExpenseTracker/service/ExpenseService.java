@@ -178,7 +178,8 @@ public class ExpenseService {
                         category.getExpectedCategoryDistribution() != null ? category.getExpectedCategoryDistribution().getId() : 0L,
                         category.getTitle(),
                         (int) ((double) groupedCategories.get(category).size() / totalCount * 100))
-                ).toList();
+                ).sorted(Comparator.comparing(DistributionDto::getId))
+                .toList();
     }
 
     public MonthlyExpenseMetricDto getMonthlyExpenseMetric() {
