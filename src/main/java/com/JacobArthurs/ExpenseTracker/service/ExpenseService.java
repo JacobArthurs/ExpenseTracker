@@ -148,11 +148,12 @@ public class ExpenseService {
     }
 
     public List<DistributionDto> getCurrentDistribution (CurrentDistributionRequestDto request) {
-        var startDate = Timestamp.valueOf(request.getCurrentDate().toLocalDateTime().minusMonths(1));
+        var endDate = new Timestamp(System.currentTimeMillis());
+        var startDate = Timestamp.valueOf(endDate.toLocalDateTime().minusMonths(request.getMonthCount()));
 
         Specification<Expense> spec = Specification.where(null);
         spec = spec.and((root, query, criteriaBuilder) ->
-                criteriaBuilder.between(root.get("createdDate"), startDate, request.getCurrentDate()));
+                criteriaBuilder.between(root.get("createdDate"), startDate, endDate));
 
         spec = spec.and((root, query, criteriaBuilder) ->
                 criteriaBuilder.equal(root.get("createdBy"), currentUserProvider.getCurrentUser()));
@@ -177,7 +178,8 @@ public class ExpenseService {
                 .map(category -> new DistributionDto(
                         category.getExpectedCategoryDistribution() != null ? category.getExpectedCategoryDistribution().getId() : 0L,
                         category.getTitle(),
-                        (int) ((double) groupedCategories.get(category).size() / totalCount * 100))
+                        category.getId(),
+                        (int) Math.round((double) groupedCategories.get(category).size() / totalCount * 100))
                 ).sorted(Comparator.comparing(DistributionDto::getId))
                 .toList();
     }

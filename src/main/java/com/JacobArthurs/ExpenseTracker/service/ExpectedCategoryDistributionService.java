@@ -42,7 +42,7 @@ public class ExpectedCategoryDistributionService {
         var expectedCategoryDistributions = expectedCategoryDistributionRepository.findAllByCreatedBy(currentUserProvider.getCurrentUser(), sort);
 
         return expectedCategoryDistributions.stream()
-                .map(dist -> new DistributionDto(dist.getId(), dist.getCategory().getTitle(), dist.getDistribution()))
+                .map(dist -> new DistributionDto(dist.getId(), dist.getCategory().getTitle(), dist.getCategory().getId(), dist.getDistribution()))
                 .collect(Collectors.toList());
     }
 

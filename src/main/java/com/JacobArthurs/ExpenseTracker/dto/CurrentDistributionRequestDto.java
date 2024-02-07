@@ -8,5 +8,5 @@ import java.sql.Timestamp;
 @Getter
 public class CurrentDistributionRequestDto {
     @NotNull
-    private Timestamp currentDate;
+    private int monthCount;
 }
