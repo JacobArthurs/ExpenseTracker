@@ -8,5 +8,6 @@ import lombok.Getter;
 public class DistributionDto {
     private Long id;
     private String category;
+    private Long categoryId;
     private int distribution;
 }

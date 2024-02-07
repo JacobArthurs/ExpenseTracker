@@ -12,6 +12,7 @@ public class CategoryDto {
     private String description;
     private Timestamp createdDate;
     private Timestamp lastUpdatedDate;
+    private Long expectedCategoryDistributionId;
 
     public CategoryDto(Category category){
         this.id = category.getId();
@@ -19,5 +20,6 @@ public class CategoryDto {
         this.description = category.getDescription();
         this.createdDate = category.getCreatedDate();
         this.lastUpdatedDate = category.getLastUpdatedDate();
+        this.expectedCategoryDistributionId = category.getExpectedCategoryDistribution().getId();
     }
 }
