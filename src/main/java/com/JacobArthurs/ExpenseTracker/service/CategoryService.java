@@ -35,15 +35,26 @@ public class CategoryService {
         this.eventPublisher = eventPublisher;
     }
 
+    /**
+     * Retrieves all categories sorted by created date, last updated date, and ID.
+     *
+     * @return List of categories
+     */
     public List<Category> getAllCategories() {
         var sort = Sort.by(
                 Sort.Order.desc("createdDate"),
                 Sort.Order.desc("lastUpdatedDate"),
                 Sort.Order.asc("id"));
-
         return categoryRepository.findAllByCreatedBy(currentUserProvider.getCurrentUser(), sort);
     }
 
+    /**
+     * Retrieves a category by ID.
+     *
+     * @param id ID of the category to retrieve
+     * @return The category
+     * @throws RuntimeException if category is not found or user is not authorized
+     */
     public Category getCategoryById(Long id) {
         var category = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found with ID: " + id));
@@ -54,6 +65,12 @@ public class CategoryService {
             return category;
     }
 
+    /**
+     * Creates a new category.
+     *
+     * @param request The category request DTO
+     * @return Operation result indicating success or failure
+     */
     public OperationResult createCategory(CategoryRequestDto request) {
         var categoryCount = categoryRepository.countByCreatedBy(currentUserProvider.getCurrentUser());
         if (categoryCount >= 10) {
@@ -61,17 +78,22 @@ public class CategoryService {
         }
 
         var category = CategoryUtil.convertRequestToObject(request);
-
         category.setCreatedBy(currentUserProvider.getCurrentUser());
         category.setCreatedDate(new Timestamp(System.currentTimeMillis()));
 
         var newCategory = categoryRepository.save(category);
-
         eventPublisher.publishEvent(new CategoryCreatedEvent(newCategory));
 
         return new OperationResult(true, "Category created successfully");
     }
 
+    /**
+     * Updates an existing category.
+     *
+     * @param id      ID of the category to update
+     * @param request The category request DTO
+     * @return Operation result indicating success or failure
+     */
     public OperationResult updateCategory(Long id, CategoryRequestDto request) {
         var category = categoryRepository.findById(id).orElse(null);
 
@@ -89,6 +111,12 @@ public class CategoryService {
         return new OperationResult(true, "Category updated successfully");
     }
 
+    /**
+     * Deletes a category by ID.
+     *
+     * @param id ID of the category to delete
+     * @return Operation result indicating success or failure
+     */
     public OperationResult deleteCategory(Long id) {
         var category = categoryRepository.findById(id).orElse(null);
         if (category == null)
@@ -100,6 +128,12 @@ public class CategoryService {
         return new OperationResult(true, "Category deleted successfully");
     }
 
+    /**
+     * Searches for categories based on the given criteria.
+     *
+     * @param request The category search request DTO
+     * @return Paginated response containing categories
+     */
     public PaginatedResponse<Category> searchCategories(CategorySearchRequestDto request) {
         Specification<Category> spec = Specification.where(null);
 
@@ -140,7 +174,6 @@ public class CategoryService {
                     criteriaBuilder.lessThanOrEqualTo(root.get("createdDate"), request.getEndDate()));
         }
 
-
         var sort = Sort.by(
                 Sort.Order.desc("createdDate"),
                 Sort.Order.desc("lastUpdatedDate"),
@@ -153,6 +186,12 @@ public class CategoryService {
         return new PaginatedResponse<>(request.getLimit(), request.getOffset(), categoryPage.getTotalElements(), categoryPage.getContent());
     }
 
+    /**
+     * Creates seed data for categories.
+     *
+     * @param user The user to whom categories belong
+     * @return List of created categories
+     */
     public List<Category> createSeedData(User user) {
         var currentTime = new Timestamp(System.currentTimeMillis());
 
@@ -172,6 +211,12 @@ public class CategoryService {
         return categoryRepository.saveAll(categories);
     }
 
+    /**
+     * Checks if the current user does not own the category.
+     *
+     * @param category The category to check
+     * @return True if the current user does not own the category, false otherwise
+     */
     private boolean doesCurrentUserNotOwnCategory(Category category) {
         var currentUser = currentUserProvider.getCurrentUser();
         return !Objects.equals(category.getCreatedBy().getId(), currentUser.getId()) &&

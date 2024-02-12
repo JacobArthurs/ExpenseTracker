@@ -31,10 +31,22 @@ public class ExpenseService {
         this.currentUserProvider = currentUserProvider;
     }
 
+    /**
+     * Retrieves all expenses.
+     *
+     * @return List of expenses
+     */
     public List<Expense> getAllExpenses() {
         return expenseRepository.findAll();
     }
 
+    /**
+     * Retrieves an expense by ID after checking authorization.
+     *
+     * @param id ID of the expense to retrieve
+     * @return The expense
+     * @throws RuntimeException if expense is not found or user is not authorized
+     */
     public Expense getExpenseById(Long id) {
         var expense = expenseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Expense not found with ID: " + id));
@@ -45,6 +57,12 @@ public class ExpenseService {
             return expense;
     }
 
+    /**
+     * Creates a new expense.
+     *
+     * @param request The expense request DTO
+     * @return Operation result indicating success or failure
+     */
     public OperationResult createExpense(ExpenseRequestDto request) {
         var expense = ExpenseUtil.convertRequestToObject(request, categoryService);
 
@@ -55,6 +73,13 @@ public class ExpenseService {
         return new OperationResult(true, "Expense created successfully");
     }
 
+    /**
+     * Updates an existing expense.
+     *
+     * @param id      ID of the expense to update
+     * @param request The expense request DTO
+     * @return Operation result indicating success or failure
+     */
     public OperationResult updateExpense(Long id, ExpenseRequestDto request) {
         var expense = expenseRepository.findById(id).orElse(null);
 
@@ -73,6 +98,12 @@ public class ExpenseService {
         return new OperationResult(true, "Expense updated successfully");
     }
 
+    /**
+     * Deletes an expense by ID.
+     *
+     * @param id ID of the expense to delete
+     * @return Operation result indicating success or failure
+     */
     public OperationResult deleteExpense(Long id) {
         var expense = expenseRepository.findById(id).orElse(null);
 
@@ -85,6 +116,12 @@ public class ExpenseService {
         return new OperationResult(true, "Expense deleted successfully");
     }
 
+    /**
+     * Searches expenses based on various criteria.
+     *
+     * @param request DTO containing search criteria
+     * @return Paginated response containing matching expenses
+     */
     public PaginatedResponse<Expense> searchExpenses(ExpenseSearchRequestDto request) {
         Specification<Expense> spec = Specification.where(null);
 
@@ -147,7 +184,13 @@ public class ExpenseService {
         return new PaginatedResponse<>(request.getLimit(), request.getOffset(), expensePage.getTotalElements(), expensePage.getContent());
     }
 
-    public List<DistributionDto> getCurrentDistribution (CurrentDistributionRequestDto request) {
+    /**
+     * Retrieves the current distribution of expenses across categories.
+     *
+     * @param request DTO containing request parameters
+     * @return List of distribution DTOs
+     */
+    public List<DistributionDto> getCurrentDistribution(CurrentDistributionRequestDto request) {
         var endDate = new Timestamp(System.currentTimeMillis());
         var startDate = Timestamp.valueOf(endDate.toLocalDateTime().minusMonths(request.getMonthCount()));
 
@@ -163,17 +206,20 @@ public class ExpenseService {
         var expenses = expenseRepository.findAll(spec, sort);
         var categories = categoryService.getAllCategories();
 
+        // Group expenses by category
         var groupedExpenses = expenses.stream()
                 .collect(Collectors.groupingBy(expense -> expense.getCategory().getId()));
 
         var totalCount = expenses.size();
 
+        // Map categories to their respective grouped expenses
         var groupedCategories = categories.stream()
                 .collect(Collectors.toMap(
                         category -> category,
                         category -> groupedExpenses.getOrDefault(category.getId(), List.of())
                 ));
 
+        // Calculate distribution percentage for each category
         return groupedCategories.keySet().stream()
                 .map(category -> new DistributionDto(
                         category.getExpectedCategoryDistribution() != null ? category.getExpectedCategoryDistribution().getId() : 0L,
@@ -184,9 +230,13 @@ public class ExpenseService {
                 .toList();
     }
 
+    /**
+     * Retrieves a monthly metric of expenses for the last 12 months.
+     *
+     * @return Monthly expense metric DTO containing months and corresponding amounts
+     */
     public MonthlyExpenseMetricDto getMonthlyExpenseMetric() {
         var now = LocalDate.now();
-
         var startDate = Timestamp.valueOf(now.minusMonths(11).withDayOfMonth(1).atStartOfDay());
         var endDate = Timestamp.valueOf(now.withDayOfMonth(now.lengthOfMonth()).atTime(23, 59, 59));
 
@@ -198,7 +248,6 @@ public class ExpenseService {
                 criteriaBuilder.equal(root.get("createdBy"), currentUserProvider.getCurrentUser()));
 
         var sort = Sort.by(Sort.Order.asc("createdDate"));
-
         var expenses = expenseRepository.findAll(spec, sort);
 
         Map<String, BigDecimal> monthlyExpenseMap = expenses.stream()
@@ -222,9 +271,14 @@ public class ExpenseService {
         return new MonthlyExpenseMetricDto(months, amounts);
     }
 
-    public BigDecimal getTotalExpenseAmount (TotalExpenseAmountRequestDto request) {
+    /**
+     * Retrieves the total expense amount for the provided month.
+     *
+     * @param request DTO containing the month for which to retrieve the total expense amount
+     * @return The total expense amount for the provided month
+     */
+    public BigDecimal getTotalExpenseAmount(TotalExpenseAmountRequestDto request) {
         var providedMonth = request.getMonth().toLocalDateTime().toLocalDate();
-
         var startOfMonth = Timestamp.valueOf(providedMonth.withDayOfMonth(1).atStartOfDay());
         var endOfMonth = Timestamp.valueOf(providedMonth.withDayOfMonth(providedMonth.lengthOfMonth()).atTime(23, 59, 59));
 
@@ -242,6 +296,12 @@ public class ExpenseService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    /**
+     * Reassigns expenses from one category to another.
+     *
+     * @param request DTO containing old and new category IDs for reassignment
+     * @return Operation result indicating success or failure
+     */
     public OperationResult reassignExpensesToNewCategory(ReassignExpenseCategoryRequestDto request) {
         Specification<Expense> spec = Specification.where(null);
 
@@ -257,7 +317,7 @@ public class ExpenseService {
             return new OperationResult(false, "No expenses in selected category.");
         }
 
-        for(Expense expense : expenses) {
+        for (Expense expense : expenses) {
             expense.setCategory(categoryService.getCategoryById(request.getNewCategoryId()));
             expenseRepository.save(expense);
         }
@@ -265,6 +325,12 @@ public class ExpenseService {
         return new OperationResult(true, expenses.size() + " expenses successfully updated.");
     }
 
+    /**
+     * Checks if the current user does not own the expense.
+     *
+     * @param expense The expense to check
+     * @return True if the current user does not own the expense, false otherwise
+     */
     private boolean doesCurrentUserNotOwnExpense(Expense expense) {
         var currentUser = currentUserProvider.getCurrentUser();
         return !Objects.equals(expense.getCreatedBy().getId(), currentUser.getId()) &&

@@ -8,6 +8,7 @@ import com.JacobArthurs.ExpenseTracker.event.UserCreatedEvent;
 import com.JacobArthurs.ExpenseTracker.model.User;
 import com.JacobArthurs.ExpenseTracker.repository.UserRepository;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,28 +29,47 @@ public class UserService implements UserDetailsService {
         this.eventPublisher = eventPublisher;
     }
 
+    /**
+     * Retrieves a user by ID.
+     *
+     * @param id The ID of the user to retrieve
+     * @return The user with the specified ID, or null if not found
+     */
     public User getUserById(Long id) {
         return userRepository.findById(id).orElse(null);
     }
 
-    public List<User> getAllUsers () {
+    /**
+     * Retrieves all users.
+     *
+     * @return A list of all users
+     */
+    public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
+    /**
+     * Validates user login credentials.
+     *
+     * @param request The login request containing username and password
+     * @return True if the login credentials are valid, otherwise false
+     */
     public Boolean validateLogin(UserLoginRequestDto request) {
         var user = userRepository.findByUsername(request.getUserName().toLowerCase());
 
-        if (user.isPresent())
-            return new BCryptPasswordEncoder().matches(request.getPassword(), user.get().getPassword());
-
-        return false;
+        return user.map(u -> new BCryptPasswordEncoder().matches(request.getPassword(), u.getPassword())).orElse(false);
     }
 
+    /**
+     * Registers a new user.
+     *
+     * @param request The registration request containing user details
+     * @return An operation result indicating success or failure
+     */
     public OperationResult registerUser(UserRegisterRequestDto request) {
         var username = request.getUserName().toLowerCase();
 
-        var isPresent = userRepository.findByUsername(username).isPresent();
-        if (isPresent)
+        if (userRepository.findByUsername(username).isPresent())
             return new OperationResult(false, "Username '" + username + "' is already taken.");
 
         var now = new Timestamp(System.currentTimeMillis());
@@ -70,6 +90,12 @@ public class UserService implements UserDetailsService {
         return new OperationResult(true, "User registered successfully");
     }
 
+    /**
+     * Deletes a user by ID.
+     *
+     * @param id The ID of the user to delete
+     * @return True if the user was deleted successfully, otherwise false
+     */
     public boolean deleteUser(Long id) {
         if (userRepository.existsById(id)) {
             userRepository.deleteById(id);
@@ -79,50 +105,63 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    /**
+     * Updates the role of a user.
+     *
+     * @param id   The ID of the user to update
+     * @param role The new role for the user
+     * @return The updated user
+     * @throws RuntimeException If the current user is not authorized or the user to update is not found
+     */
     public User updateUserRole(Long id, UserRole role) {
         if (currentUserProvider.getCurrentUser().getRole() != UserRole.ADMIN)
             throw new RuntimeException("You are not authorized to update roles");
 
-        var user = userRepository.findById(id);
-        if (user.isEmpty())
-            throw new RuntimeException("User not found with ID: " + id);
+        var user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
 
-        var updateUser = user.get();
-        updateUser.setRole(role);
+        user.setRole(role);
 
-        return userRepository.save(updateUser);
+        return userRepository.save(user);
     }
 
+    /**
+     * Updates a user's information.
+     *
+     * @param id      The ID of the user to update
+     * @param request The updated user information
+     * @return The updated user
+     * @throws RuntimeException If the current user is not authorized or the user to update is not found
+     */
     public User updateUser(Long id, UserRegisterRequestDto request) {
-        var user = userRepository.findById(id);
+        var user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
         var username = request.getUserName().toLowerCase();
         var currentUser = currentUserProvider.getCurrentUser();
 
-        if (!currentUser.getUsername().equals(username) && currentUser.getRole() != UserRole.ADMIN){
+        if (!currentUser.getUsername().equals(username) && currentUser.getRole() != UserRole.ADMIN) {
             throw new RuntimeException("You are not authorized to update a user that is not yourself.");
         }
 
-        if (user.isPresent()) {
-            var now = new Timestamp(System.currentTimeMillis());
+        var now = new Timestamp(System.currentTimeMillis());
 
-            var updateUser = new User(
-                    username,
-                    request.getPassword(),
-                    request.getName(),
-                    request.getEmail(),
-                    UserRole.DEFAULT,
-                    user.get().getCreatedDate(),
-                    now
-            );
+        user.setUsername(username);
+        user.setPassword(request.getPassword());
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setLastUpdatedDate(now);
 
-            return userRepository.save(updateUser);
-        } else
-            throw new RuntimeException("User not found with ID: " + id);
+        return userRepository.save(user);
     }
 
+    /**
+     * Loads a user by their username.
+     *
+     * @param username The username of the user to load
+     * @return The UserDetails object representing the user
+     * @throws UsernameNotFoundException If no user with the specified username is found
+     */
     @Override
-    public User loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username.toLowerCase())
-                .orElse(null);
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
 }

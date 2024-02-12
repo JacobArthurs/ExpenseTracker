@@ -6,11 +6,18 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CurrentUserProvider {
+    /**
+     * Retrieves the currently authenticated user.
+     *
+     * @return The authenticated user, or null if no user is authenticated
+     */
     public User getCurrentUser() {
-        var currentUser = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        return currentUser != null
-                ? (User) currentUser
-                : null;
+        if (authentication != null && authentication.getPrincipal() instanceof User) {
+            return (User) authentication.getPrincipal();
+        } else {
+            return null;
+        }
     }
 }

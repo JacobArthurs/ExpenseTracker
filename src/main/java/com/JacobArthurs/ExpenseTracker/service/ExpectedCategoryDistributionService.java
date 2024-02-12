@@ -32,13 +32,22 @@ public class ExpectedCategoryDistributionService {
         this.currentUserProvider = currentUserProvider;
     }
 
+    /**
+     * Retrieves all expected category distributions.
+     *
+     * @return List of expected category distributions
+     */
     public List<ExpectedCategoryDistribution> getAllExpectedCategoryDistributions() {
         return expectedCategoryDistributionRepository.findAll();
     }
 
+    /**
+     * Retrieves all distributions created by the current user.
+     *
+     * @return List of distributions
+     */
     public List<DistributionDto> getAllDistributions() {
         var sort = Sort.by(Sort.Order.asc("id"));
-
         var expectedCategoryDistributions = expectedCategoryDistributionRepository.findAllByCreatedBy(currentUserProvider.getCurrentUser(), sort);
 
         return expectedCategoryDistributions.stream()
@@ -46,6 +55,13 @@ public class ExpectedCategoryDistributionService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves an expected category distribution by ID after checking authorization.
+     *
+     * @param id ID of the expected category distribution to retrieve
+     * @return The expected category distribution
+     * @throws RuntimeException if distribution is not found or user is not authorized
+     */
     public ExpectedCategoryDistribution getExpectedCategoryDistributionById(Long id) {
         var expectedCategoryDistribution = expectedCategoryDistributionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Expected category distribution not found with ID: " + id));
@@ -56,6 +72,12 @@ public class ExpectedCategoryDistributionService {
             return expectedCategoryDistribution;
     }
 
+    /**
+     * Creates an expected category distribution.
+     *
+     * @param request The expected category distribution request DTO
+     * @return Operation result indicating success or failure
+     */
     public OperationResult createExpectedCategoryDistribution(ExpectedCategoryDistributionRequestDto request) {
         var expectedCategoryDistribution = ExpectedCategoryDistributionUtil.convertRequestToObject(request, categoryService);
         expectedCategoryDistribution.setCreatedBy(currentUserProvider.getCurrentUser());
@@ -65,6 +87,13 @@ public class ExpectedCategoryDistributionService {
         return new OperationResult(true, "Expected category distribution created successfully");
     }
 
+    /**
+     * Updates an expected category distribution by ID.
+     *
+     * @param id      ID of the expected category distribution to update
+     * @param request The expected category distribution request DTO
+     * @return Operation result indicating success or failure
+     */
     public OperationResult updateExpectedCategoryDistribution(Long id, ExpectedCategoryDistributionRequestDto request) {
         var expectedCategoryDistribution = expectedCategoryDistributionRepository.findById(id).orElse(null);
 
@@ -80,6 +109,12 @@ public class ExpectedCategoryDistributionService {
         return new OperationResult(true, "Expected category distribution updated successfully");
     }
 
+    /**
+     * Deletes an expected category distribution by ID.
+     *
+     * @param id ID of the expected category distribution to delete
+     * @return Operation result indicating success or failure
+     */
     public OperationResult deleteExpectedCategoryDistribution(Long id) {
         var expectedCategoryDistribution = expectedCategoryDistributionRepository.findById(id).orElse(null);
 
@@ -92,6 +127,12 @@ public class ExpectedCategoryDistributionService {
         return new OperationResult(true, "Expected category distribution deleted successfully");
     }
 
+    /**
+     * Searches for expected category distributions based on the given criteria.
+     *
+     * @param request The expected category distribution search request DTO
+     * @return Paginated response containing expected category distributions
+     */
     public PaginatedResponse<ExpectedCategoryDistribution> searchExpectedCategoryDistributions(ExpectedCategoryDistributionSearchRequestDto request) {
         Specification<ExpectedCategoryDistribution> spec = Specification.where(null);
 
@@ -130,6 +171,12 @@ public class ExpectedCategoryDistributionService {
         return new PaginatedResponse<>(request.getLimit(), request.getOffset(), categoryPage.getTotalElements(), categoryPage.getContent());
     }
 
+    /**
+     * Creates seed data for expected category distributions.
+     *
+     * @param categories The list of categories
+     * @param user       The user to whom categories belong
+     */
     public void createSeedData(List<Category> categories, User user) {
         var currentTime = new Timestamp(System.currentTimeMillis());
 
@@ -149,6 +196,12 @@ public class ExpectedCategoryDistributionService {
         expectedCategoryDistributionRepository.saveAll(expectedCategoryDistributions);
     }
 
+    /**
+     * Checks if the current user does not own the expected category distribution.
+     *
+     * @param distribution The expected category distribution to check
+     * @return True if the current user does not own the distribution, false otherwise
+     */
     private boolean doesCurrentUserNotOwnExpectedCategoryDistribution(ExpectedCategoryDistribution expectedCategoryDistribution) {
         var currentUser = currentUserProvider.getCurrentUser();
         return !Objects.equals(expectedCategoryDistribution.getCreatedBy().getId(), currentUser.getId()) &&

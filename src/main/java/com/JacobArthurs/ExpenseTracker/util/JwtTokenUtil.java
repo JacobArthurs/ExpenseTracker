@@ -7,9 +7,17 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 
 public class JwtTokenUtil {
-    public static final long EXPIRATION_TIME = 864_000_000; // 10 days
+    // Token expiration time: 10 days (in milliseconds)
+    public static final long EXPIRATION_TIME = 864_000_000;
+    // Secret key used for signing the token
     public static final String SECRET_KEY = "%t$upm@4XU^*eXBU88Rg&v8%8VSj7CP9&M3Snt7DLRSkaA2iTG";
 
+    /**
+     * Generates a JWT token for the given username.
+     *
+     * @param username The username to include in the token
+     * @return The generated JWT token
+     */
     public static String generateToken(String username) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + EXPIRATION_TIME);
@@ -28,6 +36,12 @@ public class JwtTokenUtil {
 
     }
 
+    /**
+     * Validates the given JWT token.
+     *
+     * @param token The token to validate
+     * @return True if the token is valid and not expired, false otherwise
+     */
     public static boolean validateToken(String token) {
         try {
             var a = Jwts.parser()
@@ -43,6 +57,12 @@ public class JwtTokenUtil {
         }
     }
 
+    /**
+     * Extracts the username from the given JWT token.
+     *
+     * @param token The token from which to extract the username
+     * @return The username extracted from the token
+     */
     public static String getUsernameFromToken(String token) {
         return Jwts.parser()
                 .verifyWith(getSecretKey())
@@ -52,6 +72,11 @@ public class JwtTokenUtil {
                 .getSubject();
     }
 
+    /**
+     * Retrieves the SecretKey used for signing the JWT token.
+     *
+     * @return The SecretKey instance
+     */
     private static SecretKey getSecretKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
