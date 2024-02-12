@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/expense")
-@Tag(name="Expense controller", description = "CRUD endpoints for expenses.")
+@Tag(name = "Expense controller", description = "CRUD endpoints for expenses.")
 @SecurityRequirement(name = "bearerAuth")
 public class ExpenseController {
     private final ExpenseService expenseService;

@@ -1,10 +1,8 @@
 package com.JacobArthurs.ExpenseTracker.util;
 
-import com.JacobArthurs.ExpenseTracker.dto.CategoryDto;
 import com.JacobArthurs.ExpenseTracker.dto.ExpectedCategoryDistributionDto;
 import com.JacobArthurs.ExpenseTracker.dto.ExpectedCategoryDistributionRequestDto;
 import com.JacobArthurs.ExpenseTracker.dto.PaginatedResponse;
-import com.JacobArthurs.ExpenseTracker.model.Category;
 import com.JacobArthurs.ExpenseTracker.model.ExpectedCategoryDistribution;
 import com.JacobArthurs.ExpenseTracker.service.CategoryService;
 

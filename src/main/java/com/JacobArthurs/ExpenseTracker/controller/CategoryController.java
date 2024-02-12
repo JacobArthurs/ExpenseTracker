@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/category")
-@Tag(name="Category controller", description = "CRUD endpoints for categories.")
+@Tag(name = "Category controller", description = "CRUD endpoints for categories.")
 @SecurityRequirement(name = "bearerAuth")
 public class CategoryController {
     private final CategoryService categoryService;

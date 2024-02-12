@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/expected-category-distribution")
-@Tag(name="Expected category distribution controller", description = "CRUD endpoints for expected category distributions.")
+@Tag(name = "Expected category distribution controller", description = "CRUD endpoints for expected category distributions.")
 @SecurityRequirement(name = "bearerAuth")
 public class ExpectedCategoryDistributionController {
     private final ExpectedCategoryDistributionService expectedCategoryDistributionService;
