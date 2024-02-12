@@ -1,56 +1,56 @@
 -- init.sql
 -- To be run only when a new docker volume 'postgres-data' is created.
+-- This scripts primary purpous is to insert dummy data.
 -- Tables must be created in this script because they will not be created by jpa until runtime.
+-- NOTE: This script is not intended to be run in production.
 
---Create tables
+-- Create table expense_tracker_user
 CREATE TABLE expense_tracker_user (
     id serial PRIMARY KEY,
-    username VARCHAR ( 50 ) NOT NULL,
-    password VARCHAR ( 200 ) NOT NULL,
-    name VARCHAR ( 200 ) NOT NULL,
-    email VARCHAR ( 200 ) NOT NULL,
-    role VARCHAR ( 50 ) NOT NULL DEFAULT 'DEFAULT',
+    username VARCHAR (50) NOT NULL,
+    password VARCHAR (200) NOT NULL,
+    name VARCHAR (200) NOT NULL,
+    email VARCHAR (200) NOT NULL,
+    role VARCHAR (50) NOT NULL DEFAULT 'DEFAULT',
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     last_updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
+-- Create table category
 CREATE TABLE category (
-	id serial PRIMARY KEY,
-	user_id INT NOT NULL,
-	title VARCHAR ( 50 ) NOT NULL,
-	description VARCHAR ( 200 ),
-	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    title VARCHAR(50) NOT NULL,
+    description VARCHAR(200),
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     last_updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    FOREIGN KEY (user_id)
-        REFERENCES expense_tracker_user (id)
+    FOREIGN KEY (user_id) REFERENCES expense_tracker_user (id)
 );
 
+-- Create table expected_category_distribution
 CREATE TABLE expected_category_distribution (
-	id serial PRIMARY KEY,
-	user_id INT NOT NULL,
-	category_id INT NOT NULL,
-	distribution int NOT NULL,
-	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    category_id INT NOT NULL,
+    distribution INT NOT NULL,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     last_updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	FOREIGN KEY (category_id)
-    	REFERENCES category (id),
-    FOREIGN KEY (user_id)
-        REFERENCES expense_tracker_user (id)
+    FOREIGN KEY (category_id) REFERENCES category (id),
+    FOREIGN KEY (user_id) REFERENCES expense_tracker_user (id)
 );
 
+-- Create table expense
 CREATE TABLE expense (
-	id serial PRIMARY KEY,
-	user_id INT NOT NULL,
-	category_id INT NOT NULL,
-	title VARCHAR ( 50 ) NOT NULL,
-	description VARCHAR ( 200 ),
-	amount decimal(12,2),
-	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    category_id INT NOT NULL,
+    title VARCHAR(50) NOT NULL,
+    description VARCHAR(200),
+    amount DECIMAL(12,2),
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     last_updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	FOREIGN KEY (category_id)
-    	REFERENCES category (id),
-    FOREIGN KEY (user_id)
-        REFERENCES expense_tracker_user (id)
+    FOREIGN KEY (category_id) REFERENCES category (id),
+    FOREIGN KEY (user_id) REFERENCES expense_tracker_user (id)
 );
 
 --Insert default user, category, and expected_category_distribution data

@@ -1,6 +1,5 @@
 package com.JacobArthurs.ExpenseTracker.dto;
 
-import com.JacobArthurs.ExpenseTracker.model.Category;
 import com.JacobArthurs.ExpenseTracker.model.ExpectedCategoryDistribution;
 import lombok.Getter;
 

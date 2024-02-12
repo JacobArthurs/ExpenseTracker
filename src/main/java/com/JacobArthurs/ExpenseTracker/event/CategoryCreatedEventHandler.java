@@ -1,7 +1,6 @@
 package com.JacobArthurs.ExpenseTracker.event;
 
 import com.JacobArthurs.ExpenseTracker.dto.ExpectedCategoryDistributionRequestDto;
-import com.JacobArthurs.ExpenseTracker.service.CategoryService;
 import com.JacobArthurs.ExpenseTracker.service.ExpectedCategoryDistributionService;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -14,7 +13,7 @@ public class CategoryCreatedEventHandler {
         this.expectedCategoryDistributionService = expectedCategoryDistributionService;
     }
     @EventListener
-    public void handleUserCreatedEvent(CategoryCreatedEvent event) {
+    public void onCategoryCreated(CategoryCreatedEvent event) {
         expectedCategoryDistributionService.createExpectedCategoryDistribution(new ExpectedCategoryDistributionRequestDto(event.getCategory().getId(), 0));
     }
 }

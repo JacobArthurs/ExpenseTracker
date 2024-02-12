@@ -15,7 +15,7 @@ public class UserCreatedEventHandler {
         this.expectedCategoryDistributionService = expectedCategoryDistributionService;
     }
     @EventListener
-    public void handleUserCreatedEvent(UserCreatedEvent event) {
+    public void onUserCreated(UserCreatedEvent event) {
         var categories = categoryService.createSeedData(event.getUser());
         expectedCategoryDistributionService.createSeedData(categories, event.getUser());
     }

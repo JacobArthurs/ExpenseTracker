@@ -11,19 +11,23 @@ Before you begin, ensure you have met the following requirements:
 - Maven installed.
 
 ## Getting Started
+
 1. **Clone the repository:**
 
-   ```
+   ```bash
    git clone https://github.com/JacobArthurs/ExpenseTrackerApi.git
    
    cd ./ExpenseTrackerApi/
    ```
+
 2. **Build and start the docker containers:**
-    ```
+
+    ```bash
     ./build_and_compose.bat
     ```
 
 ## Usage
+
 - To explore endpoints and view documentation navigate to: `http://localhost:8080/api/swagger-ui`.
 
 - The default user for authentication is:
@@ -37,6 +41,7 @@ Before you begin, ensure you have met the following requirements:
   - This user has no data but has access to admin-level endpoints.
 
 - To clear docker postgres persistent storage run command:
-    ```
+
+    ```bash
     docker volume rm expensetrackerapi_postgres-data
     ```
