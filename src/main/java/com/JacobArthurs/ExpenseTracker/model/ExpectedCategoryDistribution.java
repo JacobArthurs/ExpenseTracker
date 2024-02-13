@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 
+import com.JacobArthurs.ExpenseTracker.dto.ExpectedCategoryDistributionRequestDto;
+
 @Entity
 @Table(name = "expected_category_distribution")
 @Getter
@@ -40,6 +42,14 @@ public class ExpectedCategoryDistribution {
         this.distribution = distribution;
         this.createdDate = createdDate;
         this.lastUpdatedDate = lastUpdatedDate;
+        this.createdBy = createdBy;
+    }
+
+    public ExpectedCategoryDistribution(ExpectedCategoryDistributionRequestDto request, Category category, User createdBy) {
+        this.category = category;
+        this.distribution = request.getDistribution();
+        this.createdDate = new Timestamp(System.currentTimeMillis());
+        this.lastUpdatedDate = new Timestamp(System.currentTimeMillis());
         this.createdBy = createdBy;
     }
 }

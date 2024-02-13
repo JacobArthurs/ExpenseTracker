@@ -2,15 +2,19 @@ package com.JacobArthurs.ExpenseTracker.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
+import com.JacobArthurs.ExpenseTracker.dto.ExpenseRequestDto;
+
 @Entity
 @Table(name="expense")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Expense {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,4 +43,14 @@ public class Expense {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
     private User createdBy;
+
+    public Expense(ExpenseRequestDto request, Category category, User createdBy) {
+        this.category = category;
+        this.title = request.getTitle();
+        this.description = request.getDescription();
+        this.amount = request.getAmount();
+        this.createdDate = new Timestamp(System.currentTimeMillis());
+        this.lastUpdatedDate = new Timestamp(System.currentTimeMillis());
+        this.createdBy = createdBy;
+    }
 }

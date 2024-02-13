@@ -4,7 +4,6 @@ import com.JacobArthurs.ExpenseTracker.dto.*;
 import com.JacobArthurs.ExpenseTracker.enumerator.UserRole;
 import com.JacobArthurs.ExpenseTracker.model.Expense;
 import com.JacobArthurs.ExpenseTracker.repository.ExpenseRepository;
-import com.JacobArthurs.ExpenseTracker.util.ExpenseUtil;
 import com.JacobArthurs.ExpenseTracker.util.OffsetBasedPageRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -64,10 +63,7 @@ public class ExpenseService {
      * @return Operation result indicating success or failure
      */
     public OperationResult createExpense(ExpenseRequestDto request) {
-        var expense = ExpenseUtil.convertRequestToObject(request, categoryService);
-
-        expense.setCreatedBy(currentUserProvider.getCurrentUser());
-        expense.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+        var expense = new Expense(request, categoryService.getCategoryById(request.getCategoryId()), currentUserProvider.getCurrentUser());
 
         expenseRepository.save(expense);
         return new OperationResult(true, "Expense created successfully");

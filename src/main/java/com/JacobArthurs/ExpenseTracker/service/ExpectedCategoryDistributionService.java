@@ -6,7 +6,6 @@ import com.JacobArthurs.ExpenseTracker.model.Category;
 import com.JacobArthurs.ExpenseTracker.model.ExpectedCategoryDistribution;
 import com.JacobArthurs.ExpenseTracker.model.User;
 import com.JacobArthurs.ExpenseTracker.repository.ExpectedCategoryDistributionRepository;
-import com.JacobArthurs.ExpenseTracker.util.ExpectedCategoryDistributionUtil;
 import com.JacobArthurs.ExpenseTracker.util.OffsetBasedPageRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -79,9 +78,7 @@ public class ExpectedCategoryDistributionService {
      * @return Operation result indicating success or failure
      */
     public OperationResult createExpectedCategoryDistribution(ExpectedCategoryDistributionRequestDto request) {
-        var expectedCategoryDistribution = ExpectedCategoryDistributionUtil.convertRequestToObject(request, categoryService);
-        expectedCategoryDistribution.setCreatedBy(currentUserProvider.getCurrentUser());
-        expectedCategoryDistribution.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+        var expectedCategoryDistribution = new ExpectedCategoryDistribution(request, categoryService.getCategoryById(request.getCategoryId()), currentUserProvider.getCurrentUser());
 
         expectedCategoryDistributionRepository.save(expectedCategoryDistribution);
         return new OperationResult(true, "Expected category distribution created successfully");

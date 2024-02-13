@@ -8,6 +8,8 @@ import lombok.Setter;
 import java.sql.Timestamp;
 import java.util.List;
 
+import com.JacobArthurs.ExpenseTracker.dto.CategoryRequestDto;
+
 @Entity
 @Table(name = "category")
 @Getter
@@ -46,6 +48,14 @@ public class Category {
         this.description = description;
         this.createdDate = createdDate;
         this.lastUpdatedDate = lastUpdatedDate;
+        this.createdBy = createdBy;
+    }
+
+    public Category(CategoryRequestDto request, User createdBy) {
+        this.title = request.getTitle();
+        this.description = request.getDescription();
+        this.createdDate = new Timestamp(System.currentTimeMillis());
+        this.lastUpdatedDate = new Timestamp(System.currentTimeMillis());
         this.createdBy = createdBy;
     }
 }

@@ -9,7 +9,6 @@ import com.JacobArthurs.ExpenseTracker.event.CategoryCreatedEvent;
 import com.JacobArthurs.ExpenseTracker.model.Category;
 import com.JacobArthurs.ExpenseTracker.model.User;
 import com.JacobArthurs.ExpenseTracker.repository.CategoryRepository;
-import com.JacobArthurs.ExpenseTracker.util.CategoryUtil;
 import com.JacobArthurs.ExpenseTracker.util.OffsetBasedPageRequest;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -77,9 +76,7 @@ public class CategoryService {
             return new OperationResult(false, "Maximum 10 categories allowed. Please remove some before adding more.");
         }
 
-        var category = CategoryUtil.convertRequestToObject(request);
-        category.setCreatedBy(currentUserProvider.getCurrentUser());
-        category.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+        var category = new Category(request, currentUserProvider.getCurrentUser());
 
         var newCategory = categoryRepository.save(category);
         eventPublisher.publishEvent(new CategoryCreatedEvent(newCategory));

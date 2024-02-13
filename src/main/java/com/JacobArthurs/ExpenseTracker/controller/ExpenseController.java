@@ -1,7 +1,8 @@
 package com.JacobArthurs.ExpenseTracker.controller;
 import com.JacobArthurs.ExpenseTracker.dto.*;
 import com.JacobArthurs.ExpenseTracker.service.ExpenseService;
-import com.JacobArthurs.ExpenseTracker.util.ExpenseUtil;
+import com.JacobArthurs.ExpenseTracker.util.PaginationUtil;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -56,7 +57,7 @@ public class ExpenseController {
     @Operation(summary = "Search expenses with pagination", description = "Returns paginated expenses based on search criteria")
     public ResponseEntity<PaginatedResponse<ExpenseDto>> getAllExpenses(@RequestBody @Valid ExpenseSearchRequestDto request) {
         var expenses = expenseService.searchExpenses(request);
-        return ResponseEntity.ok(ExpenseUtil.convertPaginatedToPaginatedDto(expenses));
+        return ResponseEntity.ok(PaginationUtil.convertPaginatedToPaginatedDto(expenses, ExpenseDto::new));
     }
 
     @PostMapping

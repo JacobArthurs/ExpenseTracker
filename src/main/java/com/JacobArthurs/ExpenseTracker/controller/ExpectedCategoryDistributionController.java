@@ -2,7 +2,8 @@ package com.JacobArthurs.ExpenseTracker.controller;
 
 import com.JacobArthurs.ExpenseTracker.dto.*;
 import com.JacobArthurs.ExpenseTracker.service.ExpectedCategoryDistributionService;
-import com.JacobArthurs.ExpenseTracker.util.ExpectedCategoryDistributionUtil;
+import com.JacobArthurs.ExpenseTracker.util.PaginationUtil;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,7 +45,7 @@ public class ExpectedCategoryDistributionController {
     @Operation(summary = "Search expected category distributions with pagination", description = "Returns paginated expected category distributions based on search criteria")
     public ResponseEntity<PaginatedResponse<ExpectedCategoryDistributionDto>> getAllExpenses(@RequestBody @Valid ExpectedCategoryDistributionSearchRequestDto request) {
         var expectedCategoryDistributions = expectedCategoryDistributionService.searchExpectedCategoryDistributions(request);
-        return ResponseEntity.ok(ExpectedCategoryDistributionUtil.convertPaginatedToPaginatedDto(expectedCategoryDistributions));
+        return ResponseEntity.ok(PaginationUtil.convertPaginatedToPaginatedDto(expectedCategoryDistributions, ExpectedCategoryDistributionDto::new));
     }
 
     @PostMapping
