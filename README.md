@@ -47,7 +47,7 @@ Before you begin, ensure you have met the following requirements:
     docker volume rm expensetrackerapi_postgres-data
     ```
 
-- To generate JavaDocs, run the following command. The output files will be located in ./target/site.
+- To generate JavaDocs, run the following command. The output files will be located in `./target/site`.
 
     ```bash
     mvn javadoc:javadoc
