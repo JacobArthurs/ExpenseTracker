@@ -10,7 +10,7 @@ public class JwtTokenUtil {
     // Token expiration time: 10 days (in milliseconds)
     public static final long EXPIRATION_TIME = 864_000_000;
     // Secret key used for signing the token
-    public static final String SECRET_KEY = "%t$upm@4XU^*eXBU88Rg&v8%8VSj7CP9&M3Snt7DLRSkaA2iTG";
+    public static String SECRET_KEY = System.getenv("SECRET_KEY");
 
     /**
      * Generates a JWT token for the given username.
