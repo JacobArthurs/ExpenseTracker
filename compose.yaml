@@ -6,23 +6,25 @@ services:
       - '5432'
     environment:
       - 'POSTGRES_USER=postgres'
-      - 'POSTGRES_DB=expense_tracker'
+      - 'POSTGRES_DB=expensetracker'
       - 'POSTGRES_PASSWORD=password'
     volumes:
       - 'postgres-data:/var/lib/postgresql/data'
       - './docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'
 
   spring-app:
-    image: 'expensetracker'
+    image: 'jacobarthurs/expensetracker:latest'
     container_name: 'expensetracker-spring-app'
     ports:
       - '8080:8080'
     depends_on:
       - postgres
     environment:
-      - 'SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/expense_tracker'
+      - 'SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/expensetracker'
       - 'SPRING_DATASOURCE_USERNAME=postgres'
       - 'SPRING_DATASOURCE_PASSWORD=password'
+      - 'SPRING_PROFILES_ACTIVE=dev'
+      - 'SECRET_KEY=%t$$upm@4XU^*eXBU88Rg&v8%8VSj7CP9&M3Snt7DLRSkaA2iTG'
 
 volumes:
   postgres-data:
