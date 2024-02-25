@@ -1,6 +1,6 @@
 # Expense Tracker API
 
-This project is an Expense Tracker RESTful API made using Java Spring Boot, PostgreSQL, and Docker. It is designed to work in conjunction with my [Expense Tracker Frontend](https://github.com/JacobArthurs/expense-tracker-frontend), ensuring a full-stack application experience.
+This project is an Expense Tracker RESTful API made using Java Spring Boot, PostgreSQL, and Docker. It is designed to work in conjunction with my [Expense Tracker Frontend](https://github.com/JacobArthurs/expense-tracker-frontend), ensuring a full-stack application experience. For ease of deployment, the API is also available as a Docker image on Docker Hub. You can find the image [here](https://hub.docker.com/repository/docker/jacobarthurs/expensetracker).
 
 ## Prerequisites
 
