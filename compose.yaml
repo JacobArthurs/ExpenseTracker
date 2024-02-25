@@ -2,6 +2,7 @@ services:
   postgres:
     image: 'postgres:latest'
     container_name: 'expensetracker-postgres'
+    restart: 'on-failure'
     ports:
       - '5432'
     environment:
@@ -14,6 +15,7 @@ services:
   spring-app:
     image: 'jacobarthurs/expensetracker:latest'
     container_name: 'expensetracker-spring-app'
+    restart: 'on-failure'
     ports:
       - '8080:8080'
     depends_on:
