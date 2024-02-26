@@ -88,7 +88,7 @@ If you're interested in a deeper understanding of the API's functionality or wis
 
 ### Exploring API Endpoints
 
-- **Swagger UI**: To explore the available API endpoints and their documentation, visit `http://localhost:8080/api/swagger-ui` in your web browser. This interface provides a detailed overview of the API's capabilities, including request formats, response structures, and the ability to test endpoints directly.
+- **Swagger UI**: To explore the available API endpoints and their documentation, visit `http://localhost:8080/swagger-ui` in your web browser. This interface provides a detailed overview of the API's capabilities, including request formats, response structures, and the ability to test endpoints directly.
 
 ### Authentication and User Roles (Local Setup Only)
 
@@ -107,7 +107,7 @@ If you're interested in a deeper understanding of the API's functionality or wis
 - **Clearing PostgreSQL Storage**: If you need to reset the database and clear all persistent data, use the following Docker command. This is useful for starting fresh or troubleshooting issues related to corrupted data.
 
     ```bash
-    docker volume rm expensetrackerapi_postgres-data
+    docker volume rm expensetracker_postgres-data
     ```
 
     Please be aware that this action is irreversible and will permanently delete all data stored in the PostgreSQL database.
