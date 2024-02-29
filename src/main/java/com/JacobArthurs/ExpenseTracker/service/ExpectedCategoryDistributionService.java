@@ -196,7 +196,7 @@ public class ExpectedCategoryDistributionService {
     /**
      * Checks if the current user does not own the expected category distribution.
      *
-     * @param distribution The expected category distribution to check
+     * @param expectedCategoryDistribution The expected category distribution to check
      * @return True if the current user does not own the distribution, false otherwise
      */
     private boolean doesCurrentUserNotOwnExpectedCategoryDistribution(ExpectedCategoryDistribution expectedCategoryDistribution) {
