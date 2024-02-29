@@ -112,6 +112,14 @@ If you're interested in a deeper understanding of the API's functionality or wis
 
     Please be aware that this action is irreversible and will permanently delete all data stored in the PostgreSQL database.
 
+### Running Tests
+
+- **Unit Tests**: To run unit tests for the project, created with JUnit and Mockito, run the following Maven command in your terminal:
+
+    ```bash
+    mvn test
+    ```
+
 ### Generating Documentation (Local Setup Only)
 
 - **JavaDocs**: To generate JavaDocs for the project, which provides detailed documentation of the codebase including classes, methods, and variables, run the following Maven command in your terminal:
